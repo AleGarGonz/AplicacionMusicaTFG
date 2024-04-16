@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1043273120571",
+    "firebase_url": "https://appmusicatfg-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "appmusicatfg",
+    "storage_bucket": "appmusicatfg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043273120571:android:e4552033a206d991abd51e",
+        "android_client_info": {
+          "package_name": "com.example.aplicacionmusicatfg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhwQQOSod90XxZbK4P4ZAvlcdEE-0705g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
