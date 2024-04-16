@@ -15,13 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorArtista
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorTitulo
 import com.example.aplicacionmusicatfg.modelos.Cancion
+import com.example.aplicacionmusicatfg.navigation.Rutas
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BusquedaScreen() {
+fun BusquedaScreen(navController:NavController) {
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
 
@@ -54,7 +56,7 @@ fun BusquedaScreen() {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(canciones) { cancion ->
                         // Hacer cada elemento de la lista clicleable sin acción definida
-                        CancionItem(cancion = cancion)
+                        CancionItem(cancion = cancion,navController)
                     }
                 }
             } else {
@@ -65,11 +67,12 @@ fun BusquedaScreen() {
 }
 
 @Composable
-fun CancionItem(cancion: Cancion) {
+fun CancionItem(cancion: Cancion,navController:NavController) {
     Column(
         modifier = Modifier
             .padding(16.dp)
-            .clickable { println("Canción seleccionada: $cancion") }
+            .clickable {navController.navigate(route = Rutas.CancionScreen.createRoute(
+                cancion.artista,cancion.audio,cancion.genero,cancion.imagen,cancion.titulo))}
     ) {
         Text(text = "Título: ${cancion.titulo}", fontSize = 18.sp)
         Text(text = "Artista: ${cancion.artista}", fontSize = 16.sp)

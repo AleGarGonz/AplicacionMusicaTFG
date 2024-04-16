@@ -8,16 +8,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import com.example.aplicacionmusicatfg.navigation.NaveegacionScreens
 import com.example.aplicacionmusicatfg.ui.theme.AplicacionMusicaTFGTheme
-import com.example.aplicacionmusicatfg.view.BusquedaScreen
-import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.google.firebase.FirebaseApp
 import java.io.File
 
 
 class MainActivity : ComponentActivity() {
     private val downloadedFileState = mutableStateOf<File?>(null)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,10 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //LoginScreen()
-                    //GenerosScreen()
-                    //CancionScreen()
-                    BusquedaScreen()
+                    NaveegacionScreens()
                 }
             }
         }

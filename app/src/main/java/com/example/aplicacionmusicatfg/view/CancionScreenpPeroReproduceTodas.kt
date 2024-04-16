@@ -1,5 +1,5 @@
 package com.example.aplicacionmusicatfg.view
-
+/*
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -20,66 +20,91 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
-import com.example.aplicacionmusicatfg.controladores.getCancionStorage
+import com.example.aplicacionmusicatfg.controladores.getListaCancionesStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
-import java.io.FileInputStream
+import java.io.File
 
 //En esta pantalla de momento lo que hace es que reproduce todas las canciones
-lateinit var mediaPlayer:MediaPlayer
+
 @Composable
-fun CancionScreen(navController: NavController,param1: String, param2: String, param3: String, param4: String, param5: String) {
-    val cancion = Cancion()
-    cancion.artista = param1
-    cancion.audio = param2
-    cancion.genero = param3
-    cancion.imagen = param4
-    cancion.titulo = param5
-    println(cancion.artista)
+fun CancionScreen(navController: NavController,cancion: Cancion?) {
+    var listaDeArchivos: List<File>? by remember { mutableStateOf(null) }
+    var cancionActualIndex by remember { mutableStateOf(0) }
+    var mediaPlayer: MediaPlayer? by remember { mutableStateOf(null) }
 
-
-    //No es un metodo para llamar
-//Esto obtiene la cancion especifica para usarlo en la clase cancion
-    getCancionStorage(cancion.audio) { archivo, excepcion ->
-        if (excepcion != null) {
-            Log.e("Error", "Error al obtener la canción", excepcion)
-        } else {
-            if (archivo != null) {
-                // Inicializar MediaPlayer si aún no se ha inicializado
-                if (!::mediaPlayer.isInitialized) {
-                    mediaPlayer = MediaPlayer()
-                } else {
-                    // Detener y resetear MediaPlayer si ya está reproduciendo una canción
-                    mediaPlayer.stop()
-                    mediaPlayer.reset()
-                }
-                try {
-                    // Configurar MediaPlayer con el archivo de la canción descargada
-                    val fis = FileInputStream(archivo)
-                    val fd = fis.fd
-                    mediaPlayer.setDataSource(fd)
-                    fis.close()
-
-                    // Preparar y reproducir la canción
-                    mediaPlayer.prepare()
-                } catch (e: Exception) {
-                    Log.e("Error", "Error al reproducir la canción", e)
-                }
+    // Obtener la lista de canciones
+    if (listaDeArchivos == null) {
+        getListaCancionesStorage { archivos, excepcion ->
+            if (excepcion != null) {
+                // Manejar el error
+                Log.e("Error", "Error al obtener la lista de canciones", excepcion)
             } else {
-                // Manejar el caso en el que no se obtuvo ningún archivo
-                Log.e("Error", "No se obtuvo ningún archivo")
+                listaDeArchivos = archivos
             }
         }
     }
+    // Función para reproducir la canción actual
     fun playClicked() {
-        mediaPlayer.start()
+        if (listaDeArchivos != null) {
+            val archivoActual = listaDeArchivos!![cancionActualIndex]
+            if (mediaPlayer == null) {
+                mediaPlayer = MediaPlayer()
+                mediaPlayer!!.setDataSource(archivoActual.path)
+                mediaPlayer!!.setOnPreparedListener { mp ->
+                    mp.start()
+                }
+                mediaPlayer!!.prepare()
+            } else {
+                if (mediaPlayer!!.isPlaying) {
+                    mediaPlayer!!.pause()
+                } else {
+                    mediaPlayer!!.start()
+                }
+            }
+        }
     }
-    PantallaCancion(
-        onAnteriorClick ={},
-        onStopClick={},
-        onPlayClick={playClicked()},
-        onSiguienteClick={}
-    )
 
+    // Función para detener la reproducción de la canción
+    fun stopClicked() {
+        mediaPlayer?.seekTo(0)
+        mediaPlayer?.pause()
+    }
+
+    // Función para avanzar a la siguiente canción
+    fun siguienteCancion() {
+        if (listaDeArchivos != null) {
+            cancionActualIndex = (cancionActualIndex + 1) % listaDeArchivos!!.size
+            mediaPlayer?.stop()
+            mediaPlayer = null
+            playClicked()
+        }
+    }
+
+    // Función para avanzar a la siguiente canción
+    fun anteriorCancion() {
+        if (listaDeArchivos != null) {
+            // Calcular el índice de la canción anterior
+            var nuevoIndice = cancionActualIndex - 1
+            if (nuevoIndice < 0) {
+                nuevoIndice = listaDeArchivos!!.size - 1
+            }
+            cancionActualIndex = nuevoIndice
+
+            // Detener la reproducción de la canción actual
+            mediaPlayer?.stop()
+            mediaPlayer = null
+
+            // Reproducir la nueva canción
+            playClicked()
+        }
+    }
+
+    PantallaCancion(
+        onAnteriorClick ={anteriorCancion()},
+        onStopClick={stopClicked()},
+        onPlayClick={playClicked()},
+        onSiguienteClick={siguienteCancion()}
+    )
 }
 
 
@@ -152,4 +177,4 @@ fun PantallaCancion(
             }
         }
     }
-}
+}*/
