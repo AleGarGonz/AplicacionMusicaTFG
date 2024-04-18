@@ -80,6 +80,49 @@ fun getCancionStorage(fileName: String, callback: (File?, Exception?) -> Unit) {
             callback(null, exception)
         }
 }
+//Me devuelve las canciones que yo pase
+fun getListaCancionStorage(canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
+    val storageRef = FirebaseStorage.getInstance().reference
+
+    val archivosDescargados = mutableListOf<File>()
+    val totalCanciones = canciones.size
+    var cancionesDescargadas = 0
+
+    canciones.forEach { cancion ->
+        val audioRef = storageRef.child("audios/${cancion.audio}.mp3")
+
+        // Crear un archivo local con el mismo nombre
+        val localFile = File.createTempFile(cancion.audio, ".mp3")
+
+        audioRef.getFile(localFile)
+            .addOnSuccessListener {
+                // Agregar el archivo descargado a la lista
+                archivosDescargados.add(localFile)
+                cancionesDescargadas++
+
+                // Verificar si todas las canciones han sido descargadas
+                if (cancionesDescargadas == totalCanciones) {
+                    // Llamar al callback con la lista de archivos descargados
+                    callback(archivosDescargados, null)
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Manejar errores de descarga llamando al callback con la excepción
+                Log.e("Descarga", "Fallida ${cancion.audio}", exception)
+
+                // Verificar si todas las canciones han sido descargadas
+                if (cancionesDescargadas == totalCanciones) {
+                    // Llamar al callback con la lista de archivos descargados hasta ahora
+                    callback(archivosDescargados, exception)
+                }
+            }
+    }
+}
+
+
+
+
+
 
 //Me devuelve todas las canciones del storage en una lista formato MP3
 fun getListaCancionesStorage(callback: (List<File>?, Exception?) -> Unit) {
