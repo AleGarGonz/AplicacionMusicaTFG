@@ -123,6 +123,50 @@ fun getListaCancionStorage(context: Context,canciones: List<Cancion>, callback: 
             }
     }
 }
+fun getListaSinConexionCancionStorage(context: Context, canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
+    val archivosDescargados = mutableListOf<File>()
+
+    canciones.forEach { cancion ->
+        // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
+        val localFile = File(context.filesDir, "${cancion.audio}.mp3")
+
+        // Verificar si el archivo ya existe localmente
+        if (localFile.exists()) {
+            archivosDescargados.add(localFile)
+        } else {
+            // Si el archivo no existe localmente, descargarlo de Firebase Storage
+            val storageRef = FirebaseStorage.getInstance().reference
+            val audioRef = storageRef.child("audios/${cancion.audio}.mp3")
+
+            audioRef.getFile(localFile)
+                .addOnSuccessListener {
+                    // Agregar el archivo descargado a la lista
+                    archivosDescargados.add(localFile)
+
+                    // Verificar si todas las canciones han sido descargadas
+                    if (archivosDescargados.size == canciones.size) {
+                        // Llamar al callback con la lista de archivos descargados
+                        callback(archivosDescargados, null)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // Manejar errores de descarga llamando al callback con la excepción
+                    Log.e("Descarga", "Fallida ${cancion.audio}", exception)
+
+                    // Verificar si todas las canciones han sido descargadas
+                    if (archivosDescargados.size == canciones.size) {
+                        // Llamar al callback con la lista de archivos descargados hasta ahora
+                        callback(archivosDescargados, exception)
+                    }
+                }
+        }
+    }
+
+    // Si todas las canciones ya existen localmente, llamar al callback con la lista de archivos
+    if (archivosDescargados.size == canciones.size) {
+        callback(archivosDescargados, null)
+    }
+}
 
 
 

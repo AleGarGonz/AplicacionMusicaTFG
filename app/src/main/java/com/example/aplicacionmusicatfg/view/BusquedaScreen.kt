@@ -9,20 +9,25 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorArtista
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorTitulo
-import com.example.aplicacionmusicatfg.controladores.getListaCancionStorage
+import com.example.aplicacionmusicatfg.controladores.getListaSinConexionCancionStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
 import java.io.File
 
@@ -59,14 +64,11 @@ fun BusquedaScreen() {
         )
         Column(modifier = Modifier.fillMaxSize()) {
             if (canciones.isNotEmpty()) {
-                getListaCancionStorage(LocalContext.current,canciones = canciones) { archivosDescargados, exception ->
+                getListaSinConexionCancionStorage(LocalContext.current,canciones = canciones) { archivosDescargados, exception ->
                     if (exception != null) {
-                        // Manejar la excepción si ocurrió algún error durante la descarga
                         println("Error al descargar archivos: ${exception.message}")
                     } else {
-                        // Se descargaron los archivos exitosamente
                         archivosDescargados?.let { archivos ->
-                            // Asignar la lista de archivos descargados a la lista global
                             listaDeArchivos = archivos
                         }
                     }
@@ -94,11 +96,23 @@ fun CancionItem(cancion: Cancion,listCanciones:List<File>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(start=23.dp).padding(end = 23.dp)
+            .padding(vertical = 6.dp)
             .clickable { isSheetOpen = true }
     ) {
-        Text(text = "Título: ${cancion.titulo}", fontSize = 18.sp)
-        Text(text = "Artista: ${cancion.artista}", fontSize = 16.sp)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier
+                .padding(start = 8.dp)
+                .width(300.dp)
+            ) {
+                Text(text = "${cancion.titulo}", fontSize = 21.sp)
+                Text(text = "${cancion.artista}", fontSize = 17.sp)
+            }
+            IconButton(onClick = {/*Rellenar*/}, modifier = Modifier.weight(1f)) {
+                val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
+                Icon(painter = stopIcon, contentDescription = "MasInfo")
+            }
+        }
         if(isSheetOpen){
             ModalBottomSheet(
                 sheetState = sheetState,
@@ -131,7 +145,6 @@ fun CancionItem(cancion: Cancion,listCanciones:List<File>) {
                     mediaPlayer?.pause()
                     mediaPlayer?.seekTo(0)
                 }
-                // Función para avanzar a la siguiente canción
                 fun siguienteCancion() {
                     if (listCanciones != null) {
                         cancionActualIndex = (cancionActualIndex + 1) % listCanciones.size
@@ -140,22 +153,15 @@ fun CancionItem(cancion: Cancion,listCanciones:List<File>) {
                         playClicked()
                     }
                 }
-
-                // Función para avanzar a la siguiente canción
                 fun anteriorCancion() {
                     if (listCanciones != null) {
-                        // Calcular el índice de la canción anterior
                         var nuevoIndice = cancionActualIndex - 1
                         if (nuevoIndice < 0) {
                             nuevoIndice = listCanciones.size - 1
                         }
                         cancionActualIndex = nuevoIndice
-
-                        // Detener la reproducción de la canción actual
                         mediaPlayer?.stop()
                         mediaPlayer = null
-
-                        // Reproducir la nueva canción
                         playClicked()
                     }
                 }
@@ -169,13 +175,13 @@ fun CancionItem(cancion: Cancion,listCanciones:List<File>) {
         }
     }
 }
-
+//Metodo para obtener la posicion del mp3 en la lista
 fun obtenerPosicionArchivo(files: List<File>, nombreArchivo: String): Int {
     for ((index, file) in files.withIndex()) {
         if (file.absoluteFile.name.contains(nombreArchivo)) {
             return index
         }
     }
-    return -1 // Si no se encuentra el archivo, devolver -1
+    return -1
 }
 
