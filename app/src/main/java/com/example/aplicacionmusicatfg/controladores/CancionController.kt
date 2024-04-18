@@ -1,6 +1,7 @@
 package com.example.aplicacionmusicatfg.controladores
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
 import com.example.aplicacionmusicatfg.modelos.Cancion
 import com.google.android.gms.tasks.Task
@@ -81,7 +82,11 @@ fun getCancionStorage(fileName: String, callback: (File?, Exception?) -> Unit) {
         }
 }
 //Me devuelve las canciones que yo pase
-fun getListaCancionStorage(canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
+//No se si tendri que controlar que si ya existe la cancion no se la vuelva a descargar
+//Hay que seguir haciendo pruebas de momento mantiene bien el tiempo de reproduccion
+//Y tengo que comprobar de si ya con esto se queda guardado internamente
+//En caso de ser consistente adaptar los otros metodos a este
+fun getListaCancionStorage(context: Context,canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
     val storageRef = FirebaseStorage.getInstance().reference
 
     val archivosDescargados = mutableListOf<File>()
@@ -91,8 +96,8 @@ fun getListaCancionStorage(canciones: List<Cancion>, callback: (List<File>?, Exc
     canciones.forEach { cancion ->
         val audioRef = storageRef.child("audios/${cancion.audio}.mp3")
 
-        // Crear un archivo local con el mismo nombre
-        val localFile = File.createTempFile(cancion.audio, ".mp3")
+        // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
+        val localFile = File(context.filesDir, "${cancion.audio}.mp3")
 
         audioRef.getFile(localFile)
             .addOnSuccessListener {
@@ -118,9 +123,6 @@ fun getListaCancionStorage(canciones: List<Cancion>, callback: (List<File>?, Exc
             }
     }
 }
-
-
-
 
 
 
