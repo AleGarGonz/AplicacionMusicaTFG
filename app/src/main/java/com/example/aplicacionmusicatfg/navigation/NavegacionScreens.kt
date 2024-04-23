@@ -16,7 +16,7 @@ fun NaveegacionScreens(){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Rutas.BusquedaScreen.route){
         composable(route= Rutas.BusquedaScreen.route){
-            BusquedaScreen()
+            BusquedaScreen(navController)
         }
         composable(
             Rutas.CancionScreen.route,

@@ -1,5 +1,6 @@
 package com.example.aplicacionmusicatfg
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,14 +15,20 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.database
 
 
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // Inicializa Firebase
+        FirebaseApp.initializeApp(this)
+        Firebase.database.setPersistenceEnabled(true)
+    }
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AplicacionMusicaTFGTheme {
-                // Inicializa Firebase
-                FirebaseApp.initializeApp(this)
-                Firebase.database.setPersistenceEnabled(true)//Tengo que manejar esto para que no inicie la app con el movil sin conexion
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -33,3 +40,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

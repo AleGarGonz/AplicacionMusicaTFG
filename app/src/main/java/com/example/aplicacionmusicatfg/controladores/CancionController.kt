@@ -4,14 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.util.Log
 import com.example.aplicacionmusicatfg.modelos.Cancion
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
@@ -62,67 +59,32 @@ fun getListaCancionesRealtime(callback: (List<Cancion>) -> Unit) {
 ///////////////////////////////////////////////////////////////////////////////////////////
 //Storage
 //Descarga la cancion del Storage en formato MP3
-fun getCancionStorage(fileName: String, callback: (File?, Exception?) -> Unit) {
-    val storageRef = FirebaseStorage.getInstance().reference
-    val audioRef = storageRef.child("audios/$fileName.mp3")
-
-    // Crear un archivo local con el mismo nombre
-    val localFile = File.createTempFile(fileName, ".mp3")
-
-    audioRef.getFile(localFile)
-        .addOnSuccessListener {
-            // Descarga exitosa, llamar al callback con el archivo
-            Log.e("Descarga", "Exitosa $fileName")
-            callback(localFile, null)
-        }
-        .addOnFailureListener { exception ->
-            // Manejar errores de descarga llamando al callback con la excepción
-            Log.e("Descarga", "Fallida $fileName", exception)
-            callback(null, exception)
-        }
-}
-//Me devuelve las canciones que yo pase
-//No se si tendri que controlar que si ya existe la cancion no se la vuelva a descargar
-//Hay que seguir haciendo pruebas de momento mantiene bien el tiempo de reproduccion
-//Y tengo que comprobar de si ya con esto se queda guardado internamente
-//En caso de ser consistente adaptar los otros metodos a este
-fun getListaCancionStorage(context: Context,canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
-    val storageRef = FirebaseStorage.getInstance().reference
-
-    val archivosDescargados = mutableListOf<File>()
-    val totalCanciones = canciones.size
-    var cancionesDescargadas = 0
-
-    canciones.forEach { cancion ->
-        val audioRef = storageRef.child("audios/${cancion.audio}.mp3")
-
-        // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
-        val localFile = File(context.filesDir, "${cancion.audio}.mp3")
+fun getCancionStorage(context: Context, fileName: String, callback: (File?, Exception?) -> Unit) {
+    // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
+    val localFile = File(context.filesDir, "${fileName}.mp3")
+    // Verificar si el archivo ya existe localmente
+    if (localFile.exists()) {
+        // Llamar al callback con el archivo local
+        callback(localFile, null)
+    } else {
+        // Si el archivo no existe localmente, descargarlo de Firebase Storage
+        val storageRef = FirebaseStorage.getInstance().reference
+        val audioRef = storageRef.child("audios/${fileName}.mp3")
 
         audioRef.getFile(localFile)
             .addOnSuccessListener {
-                // Agregar el archivo descargado a la lista
-                archivosDescargados.add(localFile)
-                cancionesDescargadas++
-
-                // Verificar si todas las canciones han sido descargadas
-                if (cancionesDescargadas == totalCanciones) {
-                    // Llamar al callback con la lista de archivos descargados
-                    callback(archivosDescargados, null)
-                }
+                // Llamar al callback con el archivo local
+                callback(localFile, null)
             }
             .addOnFailureListener { exception ->
                 // Manejar errores de descarga llamando al callback con la excepción
-                Log.e("Descarga", "Fallida ${cancion.audio}", exception)
-
-                // Verificar si todas las canciones han sido descargadas
-                if (cancionesDescargadas == totalCanciones) {
-                    // Llamar al callback con la lista de archivos descargados hasta ahora
-                    callback(archivosDescargados, exception)
-                }
+                Log.e("Descarga", "Fallida ${fileName}", exception)
+                callback(null, exception)
             }
     }
 }
+
+
 fun getListaSinConexionCancionStorage(context: Context, canciones: List<Cancion>, callback: (List<File>?, Exception?) -> Unit) {
     val archivosDescargados = mutableListOf<File>()
 
@@ -170,41 +132,7 @@ fun getListaSinConexionCancionStorage(context: Context, canciones: List<Cancion>
 
 
 
-//Me devuelve todas las canciones del storage en una lista formato MP3
-fun getListaCancionesStorage(callback: (List<File>?, Exception?) -> Unit) {
-    val storageRef = FirebaseStorage.getInstance().reference.child("audios")
 
-    storageRef.listAll()
-        .addOnSuccessListener { listResult ->
-            val files = mutableListOf<File>()
-            val tasks = mutableListOf<Task<FileDownloadTask.TaskSnapshot>>()
-            listResult.items.forEach { item ->
-                val fileName = item.name
-                val localFile = File.createTempFile(fileName, ".mp3")
-                val task = item.getFile(localFile)
-                    .addOnSuccessListener {
-                        Log.e("Descarga", "Exitosa $fileName")
-                        files.add(localFile)
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("Descarga", "Fallida $fileName", exception)
-                    }
-                tasks.add(task)
-            }
-            // Esperar a que todas las descargas se completen
-            Tasks.whenAllComplete(tasks)
-                .addOnSuccessListener {
-                    callback(files, null)
-                }
-                .addOnFailureListener { exception ->
-                    callback(null, exception)
-                }
-        }
-        .addOnFailureListener { exception ->
-            Log.e("Descarga", "Error al obtener la lista de archivos", exception)
-            callback(null, exception)
-        }
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //Buscar
@@ -276,41 +204,3 @@ fun buscarCancionesPorArtista(artista: String, callback: (List<Cancion>) -> Unit
         }
     })
 }
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-//No es un metodo para llamar
-//Esto obtiene la cancion especifica para usarlo en la clase cancion
-/*getCancionStorage("Ave Maria (2007 Version) - David Bisbal") { archivo, excepcion ->
-    if (excepcion != null) {
-        Log.e("Error", "Error al obtener la canción", excepcion)
-    } else {
-        if (archivo != null) {
-            // Inicializar MediaPlayer si aún no se ha inicializado
-            if (!::mediaPlayer.isInitialized) {
-                mediaPlayer = MediaPlayer()
-            } else {
-                // Detener y resetear MediaPlayer si ya está reproduciendo una canción
-                mediaPlayer.stop()
-                mediaPlayer.reset()
-            }
-            try {
-                // Configurar MediaPlayer con el archivo de la canción descargada
-                val fis = FileInputStream(archivo)
-                val fd = fis.fd
-                mediaPlayer.setDataSource(fd)
-                fis.close()
-
-                // Preparar y reproducir la canción
-                mediaPlayer.prepare()
-            } catch (e: Exception) {
-                Log.e("Error", "Error al reproducir la canción", e)
-            }
-        } else {
-            // Manejar el caso en el que no se obtuvo ningún archivo
-            Log.e("Error", "No se obtuvo ningún archivo")
-        }
-    }
-}*/
