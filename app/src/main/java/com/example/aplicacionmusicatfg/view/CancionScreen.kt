@@ -1,5 +1,9 @@
 package com.example.aplicacionmusicatfg.view
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -20,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.getCancionStorage
+import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
 import com.example.aplicacionmusicatfg.modelos.MusicPlayerController
 import kotlinx.coroutines.delay
@@ -47,7 +54,7 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
     cancion.titulo = param5
 
     var CancionFile: File? = null;
-
+    var ImagenFile: File? = null;
 
     //No es un metodo para llamar
     //Esto obtiene la cancion especifica para usarlo en la clase cancion
@@ -58,14 +65,26 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             CancionFile = archivo
         }
     }
+    getImagenStorage(LocalContext.current,cancion.imagen) { archivo, excepcion ->
+        if (excepcion != null) {
+            println("Error al descargar archivos: ${excepcion.message}")
+        } else {
+            ImagenFile = archivo
+            println(ImagenFile?.absolutePath)
+        }
+    }
     musicPlayerController.setFile(CancionFile)
     PantallaCancion2(
-
         onStopClick={ musicPlayerController.stopAndReset()},
         onPlayClick={ musicPlayerController.playOrPauseOneFile()},
-        musicPlayerController = musicPlayerController
+        musicPlayerController = musicPlayerController,
+        cancion = cancion,
+        imagen = ImagenFile
     )
-
+    BackHandler(onBack = {
+        navController.popBackStack()
+        musicPlayerController.stopAndReset()
+    })
 }
 
 
@@ -75,7 +94,9 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
 fun PantallaCancion2(
     onStopClick: () -> Unit,
     onPlayClick: () -> Unit,
-    musicPlayerController: MusicPlayerController // Se pasa el controlador como argumento
+    cancion: Cancion,
+    imagen:File?,
+    musicPlayerController: MusicPlayerController
 ) {
     var isPlaying by rememberSaveable { mutableStateOf(false) }
     var progress by rememberSaveable { mutableStateOf(0f) }
@@ -115,9 +136,33 @@ fun PantallaCancion2(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Título de la canción",
-                fontSize = 20.sp
+                text = cancion.titulo,
+                fontSize = 30.sp
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = cancion.artista,
+                fontSize = 15.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            if(imagen != null){
+                // Lee el archivo en un Bitmap
+                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
+
+                // Convierte el Bitmap en un ImageBitmap
+                val imageBitmap = bitmap.asImageBitmap()
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = "Descripción de la imagen",
+                    modifier = Modifier.height(240.dp).width(240.dp)
+                )
+            }else{
+                Image(
+                    painter = painterResource(id = R.drawable.pordefecto),
+                    contentDescription = "Descripción de la imagen",
+                    modifier = Modifier.height(240.dp).width(240.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Slider(
                 value = progress,
