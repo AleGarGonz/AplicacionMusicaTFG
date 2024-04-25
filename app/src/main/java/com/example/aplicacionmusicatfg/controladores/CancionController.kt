@@ -139,8 +139,7 @@ fun getListaSinConexionCancionStorage(context: Context, canciones: List<Cancion>
 fun buscarCancionesPorTitulo(titulo: String, callback: (List<Cancion>) -> Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Canciones")
-    val query = myRef.orderByChild("Titulo").startAt(titulo).endAt(titulo + "\uf8ff")
-    query.addValueEventListener(object : ValueEventListener {
+    myRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             val canciones: MutableList<Cancion> = mutableListOf()
             for (cancionSnapshot in snapshot.children) {
@@ -148,21 +147,26 @@ fun buscarCancionesPorTitulo(titulo: String, callback: (List<Cancion>) -> Unit) 
                 val audio = cancionSnapshot.child("Audio").getValue(String::class.java)
                 val genero = cancionSnapshot.child("Genero").getValue(String::class.java)
                 val imagen = cancionSnapshot.child("Imagen").getValue(String::class.java)
-                val titulo = cancionSnapshot.child("Titulo").getValue(String::class.java)
-                if (artista != null && audio != null && genero != null && imagen != null && titulo != null) {
-                    val cancion = Cancion()
-                    cancion.artista = artista
-                    cancion.audio = audio
-                    cancion.genero = genero
-                    cancion.imagen = imagen
-                    cancion.titulo = titulo
-                    canciones.add(cancion)
+                val tituloDB = cancionSnapshot.child("Titulo").getValue(String::class.java)
+
+                if (artista != null && audio != null && genero != null && imagen != null && tituloDB != null) {
+                    val tituloLowerCase = tituloDB.toLowerCase()
+                    if (tituloLowerCase.contains(titulo.toLowerCase())) {
+                        val cancion = Cancion()
+                        cancion.artista = artista
+                        cancion.audio = audio
+                        cancion.genero = genero
+                        cancion.imagen = imagen
+                        cancion.titulo = tituloDB // Mantener el título original sin cambios
+                        canciones.add(cancion)
+                    }
                 } else {
                     Log.e(ContentValues.TAG, "Error: Alguno de los valores es nulo para la canción")
                 }
             }
             callback(canciones)
         }
+
         override fun onCancelled(error: DatabaseError) {
             Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
             callback(emptyList())
@@ -170,34 +174,38 @@ fun buscarCancionesPorTitulo(titulo: String, callback: (List<Cancion>) -> Unit) 
     })
 }
 
+
 fun buscarCancionesPorArtista(artista: String, callback: (List<Cancion>) -> Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Canciones")
-    val query = myRef.orderByChild("Artista").startAt(artista).endAt(artista + "\uf8ff")
-    query.addValueEventListener(object : ValueEventListener {
+    myRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
             val canciones: MutableList<Cancion> = mutableListOf()
             for (cancionSnapshot in snapshot.children) {
-                val artista = cancionSnapshot.child("Artista").getValue(String::class.java)
+                val artistaDB = cancionSnapshot.child("Artista").getValue(String::class.java)
                 val audio = cancionSnapshot.child("Audio").getValue(String::class.java)
                 val genero = cancionSnapshot.child("Genero").getValue(String::class.java)
                 val imagen = cancionSnapshot.child("Imagen").getValue(String::class.java)
                 val titulo = cancionSnapshot.child("Titulo").getValue(String::class.java)
 
-                if (artista != null && audio != null && genero != null && imagen != null && titulo != null) {
-                    val cancion = Cancion()
-                    cancion.artista = artista
-                    cancion.audio = audio
-                    cancion.genero = genero
-                    cancion.imagen = imagen
-                    cancion.titulo = titulo
-                    canciones.add(cancion)
+                if (artistaDB != null && audio != null && genero != null && imagen != null && titulo != null) {
+                    val artistaLowerCase = artistaDB.toLowerCase()
+                    if (artistaLowerCase.contains(artista.toLowerCase())) {
+                        val cancion = Cancion()
+                        cancion.artista = artistaDB // Mantener el nombre del artista original sin cambios
+                        cancion.audio = audio
+                        cancion.genero = genero
+                        cancion.imagen = imagen
+                        cancion.titulo = titulo
+                        canciones.add(cancion)
+                    }
                 } else {
                     Log.e(ContentValues.TAG, "Error: Alguno de los valores es nulo para la canción")
                 }
             }
             callback(canciones)
         }
+
         override fun onCancelled(error: DatabaseError) {
             Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
             callback(emptyList())
