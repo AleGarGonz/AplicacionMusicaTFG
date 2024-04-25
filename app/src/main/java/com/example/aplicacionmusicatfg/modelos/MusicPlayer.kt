@@ -38,6 +38,9 @@ class MusicPlayerController {
         mediaPlayerManager.setFile(file)
     }
 
+    fun getCurrentPosition(): Int {
+        return mediaPlayerManager.getCurrentPosition()
+    }
     fun getDuration(): Int {
         return mediaPlayerManager.getDuration()
     }

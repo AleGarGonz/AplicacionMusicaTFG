@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -79,16 +78,28 @@ fun PantallaCancion2(
     musicPlayerController: MusicPlayerController // Se pasa el controlador como argumento
 ) {
     var isPlaying by rememberSaveable { mutableStateOf(false) }
-    var progress by remember { mutableStateOf(0f) }
+    var progress by rememberSaveable { mutableStateOf(0f) }
 
-    var seekPosition by remember { mutableStateOf(0) }
-    var seekPositionUpdated by remember { mutableStateOf(false) }
+    var seekPosition by rememberSaveable { mutableStateOf(0) }
+    var seekPositionUpdated by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(progress) {
         if (seekPositionUpdated) {
-            delay(500) // Espera un segundo antes de realizar el cambio de seek
+            delay(300)
             musicPlayerController.seekTo(seekPosition)
             seekPositionUpdated = false
+            musicPlayerController.playOrPauseOneFile()
+        }
+    }
+    LaunchedEffect(!seekPositionUpdated) {
+        while (true) {
+            delay(100)
+            val currentPosition = musicPlayerController.getCurrentPosition()
+            val duration = musicPlayerController.getDuration()
+            if (duration > 0) {
+                val newProgress = currentPosition.toFloat() / duration.toFloat()
+                progress = newProgress.coerceIn(0f, 1f)
+            }
         }
     }
 
@@ -114,6 +125,10 @@ fun PantallaCancion2(
                     seekPosition = (musicPlayerController.getDuration() * newValue).toInt()
                     seekPositionUpdated = true
                     progress = newValue
+                    musicPlayerController.stopAndReset()
+                    if(!isPlaying){
+                        isPlaying=true
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

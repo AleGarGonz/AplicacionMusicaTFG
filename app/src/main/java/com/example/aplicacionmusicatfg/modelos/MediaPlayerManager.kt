@@ -110,6 +110,10 @@ class MediaPlayerManager {
         }
     }
 
+    fun getCurrentPosition(): Int {
+        return mediaPlayer?.currentPosition ?: 0
+    }
+
     fun getDuration(): Int {
         return mediaPlayer?.duration ?: 0
     }
