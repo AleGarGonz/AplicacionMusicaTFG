@@ -212,3 +212,41 @@ fun buscarCancionesPorArtista(artista: String, callback: (List<Cancion>) -> Unit
         }
     })
 }
+
+fun buscarCancionesPorGenero(genero: String, callback: (List<Cancion>) -> Unit) {
+    val database = Firebase.database
+    val myRef = database.getReference("Canciones")
+    myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val canciones: MutableList<Cancion> = mutableListOf()
+            for (cancionSnapshot in snapshot.children) {
+                val artista = cancionSnapshot.child("Artista").getValue(String::class.java)
+                val audio = cancionSnapshot.child("Audio").getValue(String::class.java)
+                val generoDB = cancionSnapshot.child("Genero").getValue(String::class.java)
+                val imagen = cancionSnapshot.child("Imagen").getValue(String::class.java)
+                val titulo = cancionSnapshot.child("Titulo").getValue(String::class.java)
+
+                if (generoDB != null && audio != null && artista != null && imagen != null && titulo != null) {
+                    val generoLowerCase = generoDB.toLowerCase()
+                    if (generoLowerCase.contains(genero.toLowerCase())) {
+                        val cancion = Cancion()
+                        cancion.artista = artista
+                        cancion.audio = audio
+                        cancion.genero = generoDB
+                        cancion.imagen = imagen
+                        cancion.titulo = titulo
+                        canciones.add(cancion)
+                    }
+                } else {
+                    Log.e(ContentValues.TAG, "Error: Alguno de los valores es nulo para la canción")
+                }
+            }
+            callback(canciones)
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
+            callback(emptyList())
+        }
+    })
+}

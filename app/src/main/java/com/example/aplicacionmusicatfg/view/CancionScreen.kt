@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
 import com.example.aplicacionmusicatfg.controladores.getCancionStorage
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
-import com.example.aplicacionmusicatfg.modelos.MusicPlayerController
 import kotlinx.coroutines.delay
 import java.io.File
 
@@ -120,6 +120,9 @@ fun PantallaCancion2(
             if (duration > 0) {
                 val newProgress = currentPosition.toFloat() / duration.toFloat()
                 progress = newProgress.coerceIn(0f, 1f)
+            }
+            if(currentPosition == duration){
+                isPlaying = false;
             }
         }
     }

@@ -8,15 +8,22 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
+import com.example.aplicacionmusicatfg.view.GenerosScreen
 
 //No puedo pasar objetos enteros porque navigation de jetpack compose no deja pasar objetos
 //Estuve haciendo pruebas transformando el objeto a json y luego destransformandolo pero me dejaba daba muchos problemas
 @Composable
 fun NaveegacionScreens(){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Rutas.BusquedaScreen.route){
-        composable(route= Rutas.BusquedaScreen.route){
-            BusquedaScreen(navController)
+    NavHost(navController = navController, startDestination = Rutas.GenerosScreen.route){
+        composable(route = Rutas.BusquedaScreen.route,
+            arguments = listOf(navArgument("parametroOpcional") {
+                defaultValue = "Default"
+            })){backStackEntry ->
+            BusquedaScreen(
+                navController = navController,
+                genero  = backStackEntry.arguments?.getString("parametroOpcional")
+            )
         }
         composable(
             Rutas.CancionScreen.route,
@@ -36,6 +43,9 @@ fun NaveegacionScreens(){
                 param4 = backStackEntry.arguments?.getString("parametro4") ?: "",
                 param5 = backStackEntry.arguments?.getString("parametro5") ?: ""
             )
+        }
+        composable(route= Rutas.GenerosScreen.route){
+            GenerosScreen(navController)
         }
     }
 }

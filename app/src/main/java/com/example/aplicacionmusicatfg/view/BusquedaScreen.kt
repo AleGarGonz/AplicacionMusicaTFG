@@ -20,40 +20,71 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorArtista
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorTitulo
 import com.example.aplicacionmusicatfg.controladores.getListaSinConexionCancionStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
-import com.example.aplicacionmusicatfg.modelos.MusicPlayerController
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import java.io.File
 
 private val musicPlayerController = MusicPlayerController()
 @Composable
-fun BusquedaScreen(navController: NavController) {
+fun BusquedaScreen(navController: NavController,genero: String?) {
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
     var listaDeArchivos: List<File> by remember { mutableStateOf(emptyList()) }
 
 
     LaunchedEffect(searchText) {
-        // Realizar búsqueda por título
-        buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
-            // Realizar búsqueda por artista
-            buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
-                // Combinar ambas listas y eliminar duplicados
-                val cancionesCombinadas = (cancionesPorTitulo + cancionesPorArtista).distinctBy { it.titulo }
-                canciones = cancionesCombinadas
+        if(genero!!.contains("Def")){
+            // Realizar búsqueda por título
+            buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
+                // Realizar búsqueda por artista
+                buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
+                    // Combinar ambas listas y eliminar duplicados
+                    val cancionesCombinadas = (cancionesPorTitulo + cancionesPorArtista).distinctBy { it.titulo }
+                    canciones = cancionesCombinadas
+                }
+            }
+        }else{
+            buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
+                buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
+                    val cancionesCombinadas = (cancionesPorTitulo + cancionesPorArtista).distinctBy { it.titulo }
+
+                    val cancionesFiltradas = cancionesCombinadas.filter { cancion ->
+                        cancion.genero == genero // Filtrar por género
+                    }
+
+                    canciones = cancionesFiltradas
+                }
             }
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        if(!genero!!.contains("Def")){
+            Text(
+                text = genero,
+                modifier = Modifier
+                    .padding(start= 6.dp)
+                    .padding(top = 12.dp)
+                    .padding(horizontal = 12.dp),
+                style = TextStyle(
+                    fontSize = 20.sp, // Tamaño de fuente más grande
+                    fontWeight = FontWeight.Bold, // Tipo de letra en negrita
+                    fontFamily = FontFamily.SansSerif // Opcional: elige una fuente diferente si lo deseas
+                )
+            )
+        }
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -88,7 +119,7 @@ fun BusquedaScreen(navController: NavController) {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CancionItem(cancion: Cancion,listCanciones:List<File>,musicPlayerController: MusicPlayerController,navController: NavController) {
+fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController, navController: NavController) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
