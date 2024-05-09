@@ -42,14 +42,14 @@ fun SignUp() {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text(
             text = "New?",
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             fontWeight = FontWeight.Medium,
             color = Color(0xFF000000)
         )
         Text(
             text = "\tSign up.",
             modifier = Modifier.padding(horizontal = 8.dp),
-            fontSize = 26.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF000000)
         )

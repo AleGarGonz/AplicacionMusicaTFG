@@ -16,7 +16,7 @@ fun LoginScreen() {
             .fillMaxSize()
             .padding(0.dp)) {
 
-        Header(Modifier.align(Alignment.TopEnd))
+        //Header(Modifier.align(Alignment.TopEnd))
         Body(Modifier.align(Alignment.Center))
         Footer(Modifier.align(Alignment.BottomCenter))
 

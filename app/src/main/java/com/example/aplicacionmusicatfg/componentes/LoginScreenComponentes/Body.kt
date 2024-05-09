@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -92,8 +94,8 @@ fun LoginButton(loginEnable: Boolean) {
             colors = ButtonDefaults.buttonColors(
                 disabledContentColor = Color.White,
                 contentColor = Color.White,
-                containerColor = Color(0xFFFFEB3B),
-                disabledContainerColor = Color(0xFFF7EEA8)
+                containerColor = Color(0xFF0B2FE6),
+                disabledContainerColor = Color(0xFF00BCD4)
 
             )
         ) {
@@ -107,7 +109,7 @@ fun ForgotPassword(modifier: Modifier) {
     Text(
         text = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tForgot Password?",
         fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         color = Color(0xFFB5B5B5),
         modifier = modifier
     )
@@ -229,9 +231,11 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
 @Composable
 fun ImageLogo(modifier: Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.pordefecto),
+        painter = painterResource(id = R.drawable.logoappmusicatfg),
         contentDescription = "logo",
         modifier = modifier
+            .size(150.dp) // Tamaño deseado para la imagen
+            .clip(CircleShape) // Dar forma de círculo a la imagen
     )
 }
 
