@@ -73,10 +73,9 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             println("Error al descargar archivos: ${excepcion.message}")
         } else {
             ImagenFile = archivo
-            println(ImagenFile?.absolutePath)
         }
     }
-    if(CancionFile != null) {
+    if(CancionFile != null && ImagenFile !=null) {
         musicPlayerController.setFile(CancionFile)
         PantallaCancion2(
             onStopClick = { musicPlayerController.stopAndReset() },
@@ -91,8 +90,11 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
         })
     }else{
         CircularProgressIndicator(
-            modifier = Modifier.size(90.dp),
-            color = Color.Blue
+            modifier = Modifier
+                .size(90.dp)
+                .padding(60.dp),
+            color = Color.Blue,
+            strokeWidth = 12.dp,
         )
     }
 }
@@ -110,9 +112,8 @@ fun PantallaCancion2(
 ) {
     var isPlaying by rememberSaveable { mutableStateOf(false) }
     var progress by rememberSaveable { mutableStateOf(0f) }
-
     var seekPosition by rememberSaveable { mutableStateOf(0) }
-    var seekPositionUpdated by rememberSaveable { mutableStateOf(false) }
+    var seekPositionUpdated by rememberSaveable { mutableStateOf(false)}
 
     LaunchedEffect(progress) {
         if (seekPositionUpdated) {
@@ -122,18 +123,23 @@ fun PantallaCancion2(
             musicPlayerController.playOrPauseOneFile()
         }
     }
-    LaunchedEffect(!seekPositionUpdated) {
-        while (true) {
+    LaunchedEffect(isPlaying && progress == progress) {
+        while (isPlaying) {
             delay(100)
             val currentPosition = musicPlayerController.getCurrentPosition()
             val duration = musicPlayerController.getDuration()
-            if (duration > 0) {
+            if (currentPosition > 0) {
                 val newProgress = currentPosition.toFloat() / duration.toFloat()
                 progress = newProgress.coerceIn(0f, 1f)
             }
-            if(currentPosition == duration){
+            if(progress > 0.990){
+                onStopClick()
                 isPlaying = false;
+                break;
             }
+            println("Progreso:" +progress)
+            println("duration:" +duration)
+            println("posicion actual:" +currentPosition)
         }
     }
 
@@ -160,20 +166,24 @@ fun PantallaCancion2(
             Spacer(modifier = Modifier.height(16.dp))
             if(imagen != null){
                 // Lee el archivo en un Bitmap
-                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
+                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen.absolutePath)
 
                 // Convierte el Bitmap en un ImageBitmap
                 val imageBitmap = bitmap.asImageBitmap()
                 Image(
                     bitmap = imageBitmap,
                     contentDescription = "Descripción de la imagen",
-                    modifier = Modifier.height(240.dp).width(240.dp)
+                    modifier = Modifier
+                        .height(240.dp)
+                        .width(240.dp)
                 )
             }else{
                 Image(
                     painter = painterResource(id = R.drawable.pordefecto),
                     contentDescription = "Descripción de la imagen",
-                    modifier = Modifier.height(240.dp).width(240.dp)
+                    modifier = Modifier
+                        .height(240.dp)
+                        .width(240.dp)
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))

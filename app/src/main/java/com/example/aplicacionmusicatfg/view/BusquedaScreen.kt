@@ -124,10 +124,11 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
-    val onAnteriorClick: () -> Unit = { musicPlayerController.playPrevious() }
-    val onStopClick: () -> Unit = { musicPlayerController.stopAndReset() }
-    val onPlayClick: () -> Unit = { musicPlayerController.playOrPause() }
-    val onSiguienteClick: () -> Unit = { musicPlayerController.playNext() }
+    val onAnteriorClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playPrevious() }}
+    val onStopClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.stopAndReset() }}
+    val onPlayClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playOrPause()} }
+    val onSiguienteClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playNext()} }
+    val (iconButtonClicked, setIconButtonClicked) = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,22 +146,30 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                 Text(text = "${cancion.titulo}", fontSize = 21.sp)
                 Text(text = "${cancion.artista}", fontSize = 17.sp)
             }
-            IconButton(onClick =
-            {
-                navController.navigate(route = Rutas.CancionScreen.createRoute(
-                    cancion.artista,
-                    cancion.audio,
-                    cancion.genero,
-                    cancion.imagen,
-                    cancion.titulo)
-                )
-            },
-                modifier = Modifier.weight(1f)) {
-                val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
-                Icon(painter = stopIcon, contentDescription = "MasInfo")
+            // IconButton que se desactiva después de hacer clic una vez
+            if (!iconButtonClicked) {
+                IconButton(
+                    onClick = {
+                        navController.navigate(
+                            route = Rutas.CancionScreen.createRoute(
+                                cancion.artista,
+                                cancion.audio,
+                                cancion.genero,
+                                cancion.imagen,
+                                cancion.titulo
+                            )
+                        )
+                        // Marcar el IconButton como clicado
+                        setIconButtonClicked(true)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
+                    Icon(painter = stopIcon, contentDescription = "MasInfo")
+                }
             }
         }
-        if(isSheetOpen){
+        if(isSheetOpen && !iconButtonClicked){
             ModalBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = {
@@ -168,12 +177,25 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                     musicPlayerController.release()
 
                 }) {
-                PantallaCancion(
-                    onAnteriorClick = onAnteriorClick,
-                    onStopClick = onStopClick,
-                    onPlayClick = onPlayClick,
-                    onSiguienteClick = onSiguienteClick
-                )
+                if(listCanciones.size >=1){
+                    PantallaCancion(
+                        onAnteriorClick = onAnteriorClick,
+                        onStopClick = onStopClick,
+                        onPlayClick = onPlayClick,
+                        onSiguienteClick = onSiguienteClick
+                    )
+                }else{
+                    Spacer(modifier = Modifier.size(10.dp))
+                    Text(
+                        text = "No se puede reproducir la canción en estos momentos",
+                        modifier = Modifier
+                            .padding(start = 15.dp)
+                            .fillMaxWidth()
+                            .wrapContentSize(Alignment.Center)
+                    )
+                    Spacer(modifier = Modifier.size(20.dp))
+
+                }
             }
         }
     }
