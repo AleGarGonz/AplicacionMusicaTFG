@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg
+package com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,11 +33,11 @@ fun Footer(modifier: Modifier,navController: NavController) {
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.size(24.dp))
-        SignUp(){
+        InicioSesion(){
             val currentDestinationId = navController.currentDestination?.id
-            val registerDestinationId = navController.graph.findNode(Rutas.Registro.route)?.id
-            if (currentDestinationId != null && registerDestinationId != null) {
-                navController.navigate(Rutas.Registro.route) {
+            val loginDestinationId = navController.graph.findNode(Rutas.Login.route)?.id
+            if (currentDestinationId != null && loginDestinationId != null) {
+                navController.navigate(Rutas.Login.route) {
                     popUpTo(currentDestinationId) {
                         saveState = true
                         inclusive = true
@@ -53,7 +53,7 @@ fun Footer(modifier: Modifier,navController: NavController) {
 
 }
 @Composable
-fun SignUp(onClick: () -> Unit) {
+fun InicioSesion(onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         SignUpText(onClick)
     }
@@ -62,7 +62,7 @@ fun SignUp(onClick: () -> Unit) {
 @Composable
 fun SignUpText(onClick: () -> Unit) {
     Text(
-        text = "¿No tienes cuenta? Registrate",
+        text = "¿Tienes cuenta? Inicia Sesión",
         modifier = Modifier.clickable { onClick() }.padding(horizontal = 8.dp),
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,

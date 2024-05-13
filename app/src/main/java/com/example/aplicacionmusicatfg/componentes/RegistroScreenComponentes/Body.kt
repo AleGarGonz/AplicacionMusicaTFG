@@ -1,4 +1,5 @@
-package com.example.aplicacionmusicatfg
+package com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes
+
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -38,7 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.util.PatternsCompat
 import androidx.navigation.NavController
+import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.LoginController
+import com.example.aplicacionmusicatfg.controladores.UsuarioController
+import com.example.aplicacionmusicatfg.modelos.Usuario
 import com.example.aplicacionmusicatfg.navigation.Rutas
 
 
@@ -50,18 +54,22 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
     var password by rememberSaveable {
         mutableStateOf("")
     }
+    var nombre by rememberSaveable {
+        mutableStateOf("")
+    }
     var isLoginEnable by rememberSaveable {
         mutableStateOf(false)
     }
+    val usuariocontroller = UsuarioController()
     Column(modifier = modifier) {
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         LogIntext(modifier=Modifier.align(Alignment.CenterHorizontally))
         AddsManagertext(modifier=Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(20.dp))
-        UsernameText(modifier= Modifier)
+        EmailText(modifier= Modifier)
         Email(email) {
             email = it
-            if (password.length > 0 && email.length > 0 && isValidEmail(email))
+            if (password.length > 0 && email.length > 0 && nombre.length > 0 && isValidEmail(email))
                 isLoginEnable = true
             else
                 isLoginEnable = false
@@ -70,34 +78,53 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
         PasswordText(modifier=Modifier)
         Password(password) {
             password = it
-            if (password.length > 0 && email.length > 0 && isValidEmail(email))
+            if (password.length > 0 && email.length > 0 && nombre.length > 0 && isValidEmail(email))
                 isLoginEnable = true
             else
                 isLoginEnable = false
         }
-
-        ForgotPassword(Modifier.align(Alignment.CenterHorizontally)){
-            //Aqui hacer pantalla recuperar contraseña
+        Spacer(modifier = Modifier.size(6.dp))
+        Nombretext(modifier=Modifier)
+        Nombre(nombre){
+            nombre = it
+            if (password.length > 0 && email.length > 0 && nombre.length > 0 && isValidEmail(email))
+                isLoginEnable = true
+            else
+                isLoginEnable = false
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable,logincontrol,email,password,navController)
+        LoginButton(isLoginEnable,logincontrol,email,password,nombre,navController,usuariocontroller)
         Spacer(modifier = Modifier.size(16.dp))
-        //LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
-        //SocialLogin()
         Spacer(modifier = Modifier.size(16.dp))
 
     }
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,password: String,navController: NavController) {
+fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,password: String,nombre:String,navController: NavController,usuarioController: UsuarioController) {
     val context = LocalContext.current
     Row(Modifier.padding(horizontal = 102.dp)){
         Button(
-            onClick = {    viewModel.signInWithEmailAndPassword(email, password,
+            onClick = {    viewModel.createUserWithEmailAndPassword(email, password,
                 onSuccess = {
-                    Toast.makeText(context, "Inicio de sesion exitoso!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Cuenta creada con exito!", Toast.LENGTH_SHORT).show()
+
+                    var nuevoUsuario = Usuario()
+                    nuevoUsuario.biografia =""
+                    nuevoUsuario.email = email
+                    nuevoUsuario.fotoperfil =""
+                    nuevoUsuario.generofav =""
+                    nuevoUsuario.nombre = nombre
+
+                    usuarioController.subirUsuario(nuevoUsuario,
+                        onSuccess = {
+                            println("Clave del usuario que se acaba de crear: "+it)//Mover la key a la pantalla del perfil del usuario
+                        },
+                        onError = { errorMessage ->
+                            println("Error al subir el usuario: $errorMessage")
+                        }
+                    )
                     navController.navigate(route = Rutas.GenerosScreen.route)
                 },
                 onError = { errorMessage ->
@@ -115,25 +142,12 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,pa
 
             )
         ) {
-            Text(text = "Log In")
+            Text(text = "Sing Up")
         }
     }
 }
-
 @Composable
-fun ForgotPassword(modifier: Modifier, onClick: () -> Unit) {
-    Text(
-        text = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tForgot Password?",
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = Color(0xFFB5B5B5),
-        modifier = modifier
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp)
-    )
-}
-@Composable
-fun UsernameText(modifier: Modifier) {
+fun EmailText(modifier: Modifier) {
     Text(
         text = "\t\t\t\tEmail",
         fontSize = 12.sp,
@@ -153,6 +167,16 @@ fun PasswordText(modifier: Modifier) {
     )
 }
 @Composable
+fun Nombretext(modifier: Modifier) {
+    Text(
+        text = "\t\t\t\tNombre",
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color(0xFFB5B5B5),
+        modifier = modifier
+    )
+}
+@Composable
 fun AddsManagertext(modifier: Modifier) {
     Text(
         text = "to continue",
@@ -165,7 +189,7 @@ fun AddsManagertext(modifier: Modifier) {
 @Composable
 fun LogIntext(modifier: Modifier) {
     Text(
-        text = "Log In",
+        text = "Sing Up",
         fontSize = 30.sp,
         fontWeight = FontWeight.Bold,
         color = Color(0xFF000000),
@@ -241,6 +265,27 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
             unfocusedIndicatorColor = Color.Transparent
 
 
+        )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Nombre(nombre: String, onTextChanged: (String) -> Unit) {
+    TextField(
+        value = nombre,
+        onValueChange = { onTextChanged(it) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp),
+        placeholder = { Text(text = "Nombre") },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = Color(0xFFFAFAFA),
+            focusedIndicatorColor = Color.Transparent,  // quita linea de abajo
+            unfocusedIndicatorColor = Color.Transparent
         )
     )
 }

@@ -3,7 +3,6 @@ package com.example.aplicacionmusicatfg.controladores
 import com.example.aplicacionmusicatfg.modelos.MediaPlayerManager
 import java.io.File
 
-//Quizas deberia moverlo a controladores
 class MusicPlayerController {
     private val mediaPlayerManager = MediaPlayerManager()
 

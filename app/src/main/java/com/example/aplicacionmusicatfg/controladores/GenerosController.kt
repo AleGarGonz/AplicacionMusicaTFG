@@ -9,6 +9,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+//Esto debe ser una clase viewModel
 fun getListaGenerosRealtime(callback: (List<Genero>) -> Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Generos")

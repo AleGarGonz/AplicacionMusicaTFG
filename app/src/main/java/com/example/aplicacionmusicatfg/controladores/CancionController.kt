@@ -12,6 +12,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
+
+//Esto debe ser una clase viewModel
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //Realtime Database
 

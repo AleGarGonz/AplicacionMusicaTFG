@@ -70,7 +70,7 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = Color.Black // Color del contenido (ícono y texto)
+                    contentColor = Color.Black
                 )
             ) {
                 Row(
@@ -88,7 +88,7 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                             fontSize = 16.sp,
                             color = Color.Black
                         ),
-                        modifier = Modifier.weight(1f) // Esto asegura que el Text ocupe todo el espacio disponible
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -98,9 +98,9 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                     .padding(top = 12.dp)
                     .padding(horizontal = 12.dp),
                 style = TextStyle(
-                    fontSize = 20.sp, // Tamaño de fuente más grande
-                    fontWeight = FontWeight.Bold, // Tipo de letra en negrita
-                    fontFamily = FontFamily.SansSerif // Opcional: elige una fuente diferente si lo deseas
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.SansSerif
                 )
             )
 
@@ -159,17 +159,13 @@ fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
 fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navController: NavController) {
     val randomColor by remember { mutableStateOf(generateRandomColor()) }
     fun isDark(color: Color): Boolean {
-        // Convierte el color a escala de grises utilizando el método luminance
         val luminance = 0.2126f * color.red + 0.7152f * color.green + 0.0722f * color.blue
-        // Determina si el color es oscuro o claro basado en su luminancia
         return luminance < 0.5f
     }
 
-// Dentro de tu función de composición o en otro lugar donde tengas acceso al color del Card
     val textColor = if (isDark(randomColor)) Color.White else Color.Black
     var showDialog by remember { mutableStateOf(false) }
 
-// Lógica para mostrar el diálogo cuando showDialog sea true
     if (showDialog) {
         InformacionDialog(
             texto = genero.descripcion,
@@ -213,11 +209,11 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
                     Icon(
                         painter =  painterResource(id = R.drawable.baseline_info_24),
                         contentDescription = "Información",
-                        tint = textColor // Usa el mismo color que el texto
+                        tint = textColor
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp)) // Añadir un espacio entre el texto y la imagen
+            Spacer(modifier = Modifier.height(8.dp))
 
             if(imagen != null){
                 // Lee el archivo en un Bitmap
@@ -268,7 +264,6 @@ fun InformacionDialog(texto: String, onDismissRequest: () -> Unit) {
         }
     )
 }
-// Función para generar un color aleatorio
 private fun generateRandomColor(): Color {
     val random = Random()
     return Color(

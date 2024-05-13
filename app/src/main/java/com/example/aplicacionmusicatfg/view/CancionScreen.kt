@@ -43,9 +43,6 @@ import kotlinx.coroutines.delay
 import java.io.File
 
 
-//Reestructurar Busqueda
-//Y terminar esta
-
 private val musicPlayerController = MusicPlayerController()
 @Composable
 fun CancionScreen(navController: NavController,param1: String, param2: String, param3: String, param4: String, param5: String) {
@@ -137,9 +134,6 @@ fun PantallaCancion2(
                 isPlaying = false;
                 break;
             }
-            println("Progreso:" +progress)
-            println("duration:" +duration)
-            println("posicion actual:" +currentPosition)
         }
     }
 

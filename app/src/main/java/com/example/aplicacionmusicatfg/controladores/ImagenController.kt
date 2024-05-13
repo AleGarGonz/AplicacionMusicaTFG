@@ -6,6 +6,8 @@ import com.example.aplicacionmusicatfg.modelos.Genero
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
+//Esto debe ser una clase viewModel
+
 fun getImagenStorage(context: Context, fileName: String, callback: (File?, Exception?) -> Unit) {
     // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
     val localFile = File(context.filesDir, "${fileName}.png")

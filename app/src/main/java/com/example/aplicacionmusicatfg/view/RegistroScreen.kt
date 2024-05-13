@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg
+package com.example.aplicacionmusicatfg.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,21 +8,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes.Body
+import com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes.Footer
 import com.example.aplicacionmusicatfg.controladores.LoginController
 
-
 @Composable
-fun LoginScreen(navController: NavController,loginController: LoginController) {
+fun RegistroScreen(navController: NavController, loginController: LoginController) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(0.dp)) {
 
-        //Header(Modifier.align(Alignment.TopEnd))
         Body(Modifier.align(Alignment.Center), loginController,navController)
-        Footer(Modifier.align(Alignment.BottomCenter),navController = navController)
+        Footer(Modifier.align(Alignment.BottomCenter),navController)
 
     }
 }
-
-
