@@ -6,23 +6,20 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class UsuarioController: ViewModel() {
-    val database = Firebase.database
-    val myRef = database.getReference("Usuarios")
+    private val database = Firebase.database
+    private val myRef = database.getReference("Usuarios")
+    private var refKey = ""
 
-    fun subirUsuario(usuario: Usuario, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    fun subirUsuario(usuario: Usuario, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val nuevoUsuarioRef = myRef.push()
+
         nuevoUsuarioRef.setValue(usuario)
             .addOnSuccessListener {
-                val pushKey = nuevoUsuarioRef.key
-                if (pushKey != null) {
-                    onSuccess(pushKey)
-                } else {
-                    onError("No se pudo obtener la clave push del usuario recién creado.")
-                }
-
+                refKey = nuevoUsuarioRef.key.toString()
+                onSuccess()
             }
             .addOnFailureListener { exception ->
-                onError("Error al subir el usuario: ${exception.message}")
+                onError("Error al subir la canción: ${exception.message}")
             }
     }
 }

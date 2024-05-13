@@ -34,18 +34,7 @@ fun Footer(modifier: Modifier,navController: NavController) {
         )
         Spacer(modifier = Modifier.size(24.dp))
         SignUp(){
-            val currentDestinationId = navController.currentDestination?.id
-            val registerDestinationId = navController.graph.findNode(Rutas.Registro.route)?.id
-            if (currentDestinationId != null && registerDestinationId != null) {
-                navController.navigate(Rutas.Registro.route) {
-                    popUpTo(currentDestinationId) {
-                        saveState = true
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            navController.navigate(Rutas.Registro.route)
         }
         Spacer(modifier = Modifier.size(24.dp))
 

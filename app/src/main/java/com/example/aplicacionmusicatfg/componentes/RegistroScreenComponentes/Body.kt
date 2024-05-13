@@ -119,13 +119,13 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,pa
 
                     usuarioController.subirUsuario(nuevoUsuario,
                         onSuccess = {
-                            println("Clave del usuario que se acaba de crear: "+it)//Mover la key a la pantalla del perfil del usuario
+                            Toast.makeText(context, "Usuario creado con exito!", Toast.LENGTH_SHORT).show()
+                            navController.navigate(route = Rutas.GenerosScreen.route)
                         },
                         onError = { errorMessage ->
                             println("Error al subir el usuario: $errorMessage")
                         }
                     )
-                    navController.navigate(route = Rutas.GenerosScreen.route)
                 },
                 onError = { errorMessage ->
                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()

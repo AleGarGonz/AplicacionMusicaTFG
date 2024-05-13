@@ -11,6 +11,7 @@ import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.example.aplicacionmusicatfg.view.GenerosScreen
+import com.example.aplicacionmusicatfg.view.RecuperarContraScreen
 import com.example.aplicacionmusicatfg.view.RegistroScreen
 import com.google.firebase.auth.FirebaseUser
 
@@ -60,6 +61,9 @@ fun NaveegacionScreens(){
         }
         composable(route= Rutas.Registro.route){
             RegistroScreen(navController,logincontrol)
+        }
+        composable(route= Rutas.RecuperarContra.route){
+            RecuperarContraScreen(navController,logincontrol)
         }
     }
 }

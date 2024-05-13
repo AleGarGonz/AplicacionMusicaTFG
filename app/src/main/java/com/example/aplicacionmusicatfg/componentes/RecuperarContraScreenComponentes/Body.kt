@@ -1,8 +1,7 @@
-package com.example.aplicacionmusicatfg
+package com.example.aplicacionmusicatfg.componentes.RecuperarContraScreenComponentes
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -32,12 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.util.PatternsCompat
 import androidx.navigation.NavController
+import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.navigation.Rutas
 
@@ -45,9 +42,6 @@ import com.example.aplicacionmusicatfg.navigation.Rutas
 @Composable
 fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavController) {
     var email by rememberSaveable {
-        mutableStateOf("")
-    }
-    var password by rememberSaveable {
         mutableStateOf("")
     }
     var isLoginEnable by rememberSaveable {
@@ -61,44 +55,38 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
         UsernameText(modifier= Modifier)
         Email(email) {
             email = it
-            if (password.length > 0 && email.length > 0 && isValidEmail(email))
+            if (email.length > 0 && isValidEmail(email))
                 isLoginEnable = true
             else
                 isLoginEnable = false
         }
         Spacer(modifier = Modifier.size(6.dp))
-        PasswordText(modifier=Modifier)
-        Password(password) {
-            password = it
-            if (password.length > 0 && email.length > 0 && isValidEmail(email))
-                isLoginEnable = true
-            else
-                isLoginEnable = false
-        }
-
-        ForgotPassword(Modifier.align(Alignment.CenterHorizontally)){
-            navController.navigate(route = Rutas.RecuperarContra.route)
-        }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable,logincontrol,email,password,navController)
+        LoginButton(isLoginEnable,logincontrol,email,navController)
         Spacer(modifier = Modifier.size(16.dp))
-        //LoginDivider()
-        Spacer(modifier = Modifier.size(32.dp))
-        //SocialLogin()
-        Spacer(modifier = Modifier.size(16.dp))
-
     }
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,password: String,navController: NavController) {
+fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,navController: NavController) {
     val context = LocalContext.current
     Row(Modifier.padding(horizontal = 102.dp)){
         Button(
-            onClick = {    viewModel.signInWithEmailAndPassword(email, password,
+            onClick = {    viewModel.resetPasswordByEmail(email,
                 onSuccess = {
-                    Toast.makeText(context, "Inicio de sesion exitoso!", Toast.LENGTH_SHORT).show()
-                    navController.navigate(route = Rutas.GenerosScreen.route)
+                    Toast.makeText(context, "Se ha enviado un email a tu correo!", Toast.LENGTH_SHORT).show()
+                    val currentDestinationId = navController.currentDestination?.id
+                    val loginDestinationId = navController.graph.findNode(Rutas.Login.route)?.id
+                    if (currentDestinationId != null && loginDestinationId != null) {
+                        navController.navigate(Rutas.Login.route) {
+                            popUpTo(currentDestinationId) {
+                                saveState = true
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 },
                 onError = { errorMessage ->
                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
@@ -115,37 +103,14 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,pa
 
             )
         ) {
-            Text(text = "Log In")
+            Text(text = "Send Email")
         }
     }
-}
-
-@Composable
-fun ForgotPassword(modifier: Modifier, onClick: () -> Unit) {
-    Text(
-        text = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tForgot Password?",
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = Color(0xFFB5B5B5),
-        modifier = modifier
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp)
-    )
 }
 @Composable
 fun UsernameText(modifier: Modifier) {
     Text(
         text = "\t\t\t\tEmail",
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color(0xFFB5B5B5),
-        modifier = modifier
-    )
-}
-@Composable
-fun PasswordText(modifier: Modifier) {
-    Text(
-        text = "\t\t\t\tPassword",
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
         color = Color(0xFFB5B5B5),
@@ -165,61 +130,12 @@ fun AddsManagertext(modifier: Modifier) {
 @Composable
 fun LogIntext(modifier: Modifier) {
     Text(
-        text = "Log In",
+        text = "Reset Password",
         fontSize = 30.sp,
         fontWeight = FontWeight.Bold,
         color = Color(0xFF000000),
         modifier = modifier
     )
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Password(password: String, onTextChanged: (String) -> Unit) {
-    var showPassword by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-
-    TextField(
-        value = password,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.dp),
-        trailingIcon = {
-            val imagen = if (showPassword) {
-                R.drawable.baseline_visibility_off_24
-            } else {
-                R.drawable.baseline_visibility_24
-            }
-
-
-            Icon(
-                painter = painterResource(id = imagen),
-                contentDescription = "View",
-                modifier = Modifier.clickable { showPassword = !showPassword }
-            )
-        },
-
-        placeholder = { Text(text = "Password") },
-        maxLines = 1,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color(0xFFFAFAFA),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-
-
-        ),
-        visualTransformation = if (showPassword) {
-            VisualTransformation.None
-
-        } else {
-            PasswordVisualTransformation()
-        }
-    )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
