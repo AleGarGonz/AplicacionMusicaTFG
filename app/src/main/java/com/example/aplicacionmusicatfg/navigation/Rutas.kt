@@ -12,5 +12,6 @@ sealed class Rutas(val route:String){
     object GenerosScreen:Rutas("generos_screen")
     object Login : Rutas("login_screen")
     object Registro : Rutas("registro_screen")
-    object RecuperarContra : Rutas("recuperarcontra-screen")
+    object RecuperarContra : Rutas("recuperarcontra_screen")
+    object PerfilUsuario : Rutas("perfilusuario_screen")
 }

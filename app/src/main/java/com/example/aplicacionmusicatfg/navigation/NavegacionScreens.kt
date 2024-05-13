@@ -8,9 +8,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aplicacionmusicatfg.LoginScreen
 import com.example.aplicacionmusicatfg.controladores.LoginController
+import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.example.aplicacionmusicatfg.view.GenerosScreen
+import com.example.aplicacionmusicatfg.view.PerfilUsuarioScreen
 import com.example.aplicacionmusicatfg.view.RecuperarContraScreen
 import com.example.aplicacionmusicatfg.view.RegistroScreen
 import com.google.firebase.auth.FirebaseUser
@@ -23,6 +25,7 @@ fun NaveegacionScreens(){
     val navController = rememberNavController()
     val logincontrol = LoginController()
     val user :FirebaseUser? = logincontrol.getCurrentUser()
+    val usuariocontroller = UsuarioController()
 
     NavHost(navController = navController, startDestination = if(user == null)Rutas.Login.route else Rutas.GenerosScreen.route){
         composable(route = Rutas.BusquedaScreen.route,
@@ -60,10 +63,13 @@ fun NaveegacionScreens(){
             LoginScreen(navController,logincontrol)
         }
         composable(route= Rutas.Registro.route){
-            RegistroScreen(navController,logincontrol)
+            RegistroScreen(navController,logincontrol,usuariocontroller)
         }
         composable(route= Rutas.RecuperarContra.route){
             RecuperarContraScreen(navController,logincontrol)
+        }
+        composable(route= Rutas.PerfilUsuario.route){
+            PerfilUsuarioScreen(navController,logincontrol,usuariocontroller)
         }
     }
 }

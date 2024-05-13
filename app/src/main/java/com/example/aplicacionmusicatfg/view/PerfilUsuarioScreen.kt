@@ -8,20 +8,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes.Body
-import com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes.Footer
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiFooter
+import com.example.aplicacionmusicatfg.componentes.PerfilUsuarioScreenComponentes.Body
+
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 
 @Composable
-fun RegistroScreen(navController: NavController, loginController: LoginController,usuariocontroller: UsuarioController) {
+fun PerfilUsuarioScreen(navController: NavController, loginController: LoginController,usuarioController: UsuarioController) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(0.dp)) {
 
-        Body(Modifier.align(Alignment.Center), loginController,navController, usuariocontroller)
-        Footer(Modifier.align(Alignment.BottomCenter),navController)
-
+        Body(Modifier.align(Alignment.Center), loginController,navController,usuarioController)
+        MiFooter(Modifier.align(Alignment.BottomCenter),navController = navController)
     }
 }

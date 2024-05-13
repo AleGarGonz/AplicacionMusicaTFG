@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.componentes.CategoriasScreenComponentes.MiBody
-import com.example.aplicacionmusicatfg.componentes.CategoriasScreenComponentes.MiFooter
 import com.example.aplicacionmusicatfg.componentes.CategoriasScreenComponentes.MiHeader
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiFooter
 import com.example.aplicacionmusicatfg.controladores.LoginController
 
 
@@ -32,6 +32,6 @@ fun GenerosScreen(navController: NavController,loginController: LoginController)
             onShowDialogChange = { showDialog = it },
             navController= navController
         )
-        MiFooter(Modifier.align(Alignment.BottomCenter))
+        MiFooter(Modifier.align(Alignment.BottomCenter),navController)
     }
 }

@@ -47,7 +47,7 @@ import com.example.aplicacionmusicatfg.navigation.Rutas
 
 
 @Composable
-fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavController) {
+fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavController,usuarioController: UsuarioController) {
     var email by rememberSaveable {
         mutableStateOf("")
     }
@@ -60,7 +60,7 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
     var isLoginEnable by rememberSaveable {
         mutableStateOf(false)
     }
-    val usuariocontroller = UsuarioController()
+
     Column(modifier = modifier) {
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         LogIntext(modifier=Modifier.align(Alignment.CenterHorizontally))
@@ -93,7 +93,7 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
                 isLoginEnable = false
         }
         Spacer(modifier = Modifier.size(16.dp))
-        LoginButton(isLoginEnable,logincontrol,email,password,nombre,navController,usuariocontroller)
+        LoginButton(isLoginEnable,logincontrol,email,password,nombre,navController,usuarioController)
         Spacer(modifier = Modifier.size(16.dp))
         Spacer(modifier = Modifier.size(32.dp))
         Spacer(modifier = Modifier.size(16.dp))

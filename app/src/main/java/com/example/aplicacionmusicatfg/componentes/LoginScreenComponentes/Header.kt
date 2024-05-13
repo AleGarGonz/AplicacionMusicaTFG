@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
+//Por si lo uso luego(no creo)
 
 @Composable
 fun Header(modifier: Modifier) {
