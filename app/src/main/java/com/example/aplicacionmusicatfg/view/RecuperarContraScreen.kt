@@ -23,3 +23,4 @@ fun RecuperarContraScreen(navController: NavController,loginController: LoginCon
         Body(Modifier.align(Alignment.Center), loginController,navController)
     }
 }
+//J
