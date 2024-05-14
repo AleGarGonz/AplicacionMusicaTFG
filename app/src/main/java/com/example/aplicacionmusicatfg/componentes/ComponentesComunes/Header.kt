@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.CategoriasScreenComponentes
+package com.example.aplicacionmusicatfg.componentes.ComponentesComunes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -38,15 +38,34 @@ fun MiHeader(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            modifier = Modifier.padding(5.dp).padding(start = 6.dp),
-            text = "Descubre",
-            style = TextStyle(
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+        val currentDestinationId = navController.currentDestination?.id
+        val generoDestinationId = navController.graph.findNode(Rutas.GenerosScreen.route)?.id
+        val perfilDestinationId = navController.graph.findNode(Rutas.PerfilUsuario.route)?.id
+        if(currentDestinationId == generoDestinationId ) {
+            Text(
+                modifier = Modifier.padding(5.dp).padding(start = 6.dp),
+                text = "Descubre",
+                style = TextStyle(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.SansSerif,
+                    color = Color.Black
+                )
             )
-        )
+        }else{
+            if(currentDestinationId == perfilDestinationId ) {
+                Text(
+                    modifier = Modifier.padding(5.dp).padding(start = 6.dp),
+                    text = "Perfil",
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.SansSerif,
+                        color = Color.Black
+                    )
+                )
+            }
+        }
         Spacer(modifier = Modifier.width(16.dp))
         IconButton(
             onClick = { onShowDialogChange(true) },
@@ -61,7 +80,6 @@ fun MiHeader(
         }
     }
 
-    // Llamamos al diálogo de cierre de sesión y pasamos los parámetros necesarios
     CerrarSesionDialog(
         showDialog = showDialog,
         onDismissRequest = { onShowDialogChange(false) },
@@ -88,12 +106,8 @@ fun CerrarSesionDialog(
                 Button(
                     onClick = {
                         loginController.signOut()
-                        // Navegar a la pantalla de inicio de sesión
-                        // Obtener el ID de la pantalla actual
                         val currentDestinationId = navController.currentDestination?.id
-                        // Obtener el ID de la pantalla de inicio de sesión
                         val loginDestinationId = navController.graph.findNode(Rutas.Login.route)?.id
-                        // Verificar si ambos IDs son válidos
                         if (currentDestinationId != null && loginDestinationId != null) {
                             // Navegar a la pantalla de inicio de sesión, eliminando la pantalla actual del backstack
                             navController.navigate(Rutas.Login.route) {

@@ -27,7 +27,7 @@ fun NaveegacionScreens(){
     val user :FirebaseUser? = logincontrol.getCurrentUser()
     val usuariocontroller = UsuarioController()
 
-    NavHost(navController = navController, startDestination = if(user == null)Rutas.Login.route else Rutas.GenerosScreen.route){
+    NavHost(navController = navController, startDestination = if(user == null || !user.isEmailVerified)Rutas.Login.route else Rutas.GenerosScreen.route){
         composable(route = Rutas.BusquedaScreen.route,
             arguments = listOf(navArgument("parametroOpcional") {
                 defaultValue = "Default"

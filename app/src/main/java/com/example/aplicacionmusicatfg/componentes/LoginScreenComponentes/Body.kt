@@ -2,10 +2,12 @@ package com.example.aplicacionmusicatfg
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,7 +55,11 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
     var isLoginEnable by rememberSaveable {
         mutableStateOf(false)
     }
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .background(color = Color.White)
+    ) {
+        Spacer(modifier = Modifier.size(60.dp))
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         LogIntext(modifier=Modifier.align(Alignment.CenterHorizontally))
         AddsManagertext(modifier=Modifier.align(Alignment.CenterHorizontally))
@@ -98,7 +104,17 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,pa
             onClick = {    viewModel.signInWithEmailAndPassword(email, password,
                 onSuccess = {
                     Toast.makeText(context, "Inicio de sesion exitoso!", Toast.LENGTH_SHORT).show()
-                    navController.navigate(route = Rutas.GenerosScreen.route)
+                    val currentDestinationId = navController.currentDestination?.id
+                    navController.navigate(route = Rutas.GenerosScreen.route){
+                        if (currentDestinationId != null) {
+                            popUpTo(currentDestinationId) {
+                                saveState = true
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 },
                 onError = { errorMessage ->
                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
@@ -206,11 +222,12 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Gray,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
             containerColor = Color(0xFFFAFAFA),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-
-
         ),
         visualTransformation = if (showPassword) {
             VisualTransformation.None
@@ -236,6 +253,9 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Gray,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
             containerColor = Color(0xFFFAFAFA),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent

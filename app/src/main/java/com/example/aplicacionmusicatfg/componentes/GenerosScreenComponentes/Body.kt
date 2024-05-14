@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.CategoriasScreenComponentes
+package com.example.aplicacionmusicatfg.componentes.GenerosScreenComponentes
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -100,7 +100,8 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.SansSerif
+                    fontFamily = FontFamily.SansSerif,
+                    color=Color.Black
                 )
             )
 

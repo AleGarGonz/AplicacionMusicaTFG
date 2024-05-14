@@ -3,10 +3,12 @@ package com.example.aplicacionmusicatfg.componentes.RegistroScreenComponentes
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -61,7 +63,10 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
         mutableStateOf(false)
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .background(color = Color.White)) {
+        Spacer(modifier = Modifier.size(60.dp))
         ImageLogo(Modifier.align(Alignment.CenterHorizontally))
         LogIntext(modifier=Modifier.align(Alignment.CenterHorizontally))
         AddsManagertext(modifier=Modifier.align(Alignment.CenterHorizontally))
@@ -230,11 +235,12 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Gray,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
             containerColor = Color(0xFFFAFAFA),
-            focusedIndicatorColor = Color.Transparent,  // quita linea de abajo
+            focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-
-
         ),
         visualTransformation = if (showPassword) {
             VisualTransformation.None
@@ -260,11 +266,12 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Gray,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
             containerColor = Color(0xFFFAFAFA),
-            focusedIndicatorColor = Color.Transparent,  // quita linea de abajo
+            focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-
-
         )
     )
 }
@@ -283,8 +290,11 @@ fun Nombre(nombre: String, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         colors = TextFieldDefaults.textFieldColors(
+            cursorColor = Color.Gray,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Gray,
             containerColor = Color(0xFFFAFAFA),
-            focusedIndicatorColor = Color.Transparent,  // quita linea de abajo
+            focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
     )
