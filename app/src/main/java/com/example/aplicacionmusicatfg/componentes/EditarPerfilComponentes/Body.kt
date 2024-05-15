@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -184,20 +185,26 @@ fun Body(
                 BotonActualizar() {
                     if (imagenActualizada) {
                         ImagenFileActualizado?.let { subirImagenStorage(file = it) }
-                        usuario.nombre = nombre
                         // Obtener el nombre del archivo sin la extensión
                         val fileNameWithoutExtension = ImagenFileActualizado?.name.toString()
                         usuario.fotoperfil = fileNameWithoutExtension
+                    }
+                    if(biografia != usuario.biografia && biografia.isNotEmpty()){
                         usuario.biografia = biografia
+                    }
+                    if(genero != usuario.generofav && genero.isNotEmpty()){
                         usuario.generofav = genero
-                        usuarioController.actualizarUsuario(usuario) { exito ->
-                            if (exito) {
-                                // La actualización fue exitosa
-                                println("El usuario se actualizó correctamente en la base de datos.")
-                            } else {
-                                // La actualización falló
-                                println("No se pudo actualizar el usuario en la base de datos.")
-                            }
+                    }
+                    if(nombre != usuario.nombre && nombre.isNotEmpty()){
+                        usuario.nombre = nombre
+                    }
+                    usuarioController.actualizarUsuario(usuario) { exito ->
+                        if (exito) {
+                            // La actualización fue exitosa
+                            Toast.makeText(context, "Actualizacion exitosa!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // La actualización falló
+                            Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
