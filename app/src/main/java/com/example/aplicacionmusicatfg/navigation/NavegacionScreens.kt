@@ -11,6 +11,7 @@ import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
+import com.example.aplicacionmusicatfg.view.EditarPerfilScreen
 import com.example.aplicacionmusicatfg.view.GenerosScreen
 import com.example.aplicacionmusicatfg.view.PerfilUsuarioScreen
 import com.example.aplicacionmusicatfg.view.RecuperarContraScreen
@@ -27,7 +28,7 @@ fun NaveegacionScreens(){
     val user :FirebaseUser? = logincontrol.getCurrentUser()
     val usuariocontroller = UsuarioController()
 
-    NavHost(navController = navController, startDestination = if(user == null || !user.isEmailVerified)Rutas.Login.route else Rutas.GenerosScreen.route){
+    NavHost(navController = navController, startDestination = if(user == null /*|| !user.isEmailVerified*/)Rutas.Login.route else Rutas.GenerosScreen.route){//Lo de verified es si ha verificado su cuenta de google
         composable(route = Rutas.BusquedaScreen.route,
             arguments = listOf(navArgument("parametroOpcional") {
                 defaultValue = "Default"
@@ -70,6 +71,9 @@ fun NaveegacionScreens(){
         }
         composable(route= Rutas.PerfilUsuario.route){
             PerfilUsuarioScreen(navController,logincontrol,usuariocontroller)
+        }
+        composable(route= Rutas.EditarPerfil.route){
+            EditarPerfilScreen(navController,logincontrol,usuariocontroller)
         }
     }
 }

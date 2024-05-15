@@ -88,9 +88,7 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
         Spacer(modifier = Modifier.size(16.dp))
         LoginButton(isLoginEnable,logincontrol,email,password,navController)
         Spacer(modifier = Modifier.size(16.dp))
-        //LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
-        //SocialLogin()
         Spacer(modifier = Modifier.size(16.dp))
 
     }

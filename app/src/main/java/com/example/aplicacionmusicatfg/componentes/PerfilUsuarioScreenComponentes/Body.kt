@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +44,7 @@ import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Usuario
+import com.example.aplicacionmusicatfg.navigation.Rutas
 import java.io.File
 
 
@@ -68,14 +69,23 @@ fun Body(
     }
 
     usuario?.let { usuario ->
-        getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
-            if (excepcion != null) {
-                println("Error al descargar archivos: ${excepcion.message}")
-            } else {
-                ImagenFile = archivo
+        if(usuario.fotoperfil != null && usuario.fotoperfil.isNotBlank() && usuario.fotoperfil.isNotEmpty() ){
+            getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
+                if (excepcion != null) {
+                    println("Error al descargar archivos: ${excepcion.message}")
+                } else {
+                    ImagenFile = archivo
+                }
             }
         }
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .height(140.dp)
+                .background(
+                    color = Color.Black//Poner un fondo wapo o algo
+                )
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -88,7 +98,7 @@ fun Body(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top = 70.dp).padding(start = 4.dp),
+                .padding(top =85.dp).padding(start = 4.dp),
             horizontalAlignment = Alignment.Start,
         ) {
             if(ImagenFile != null) {
@@ -102,7 +112,8 @@ fun Body(
                     contentDescription = "Foto perfil",
                     modifier = Modifier
                         .size(120.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.FillBounds
                 )
             }else{
                 Image(
@@ -110,7 +121,8 @@ fun Body(
                     contentDescription = "Descripción de la imagen",
                     modifier = Modifier
                         .size(120.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.FillBounds
                 )
             }
                 Column(
@@ -130,7 +142,7 @@ fun Body(
                             modifier = Modifier.weight(1f) // Hace que el texto ocupe el espacio disponible
                         )
                         Button(
-                            onClick = { /* Lógica del botón */ },
+                            onClick = {  navController.navigate(route = Rutas.EditarPerfil.route) },
                             modifier = Modifier.padding(start = 16.dp).padding(end=10.dp) // Añade padding al botón
                         ) {
                             Text(text = "Editar Perfil")
@@ -188,18 +200,6 @@ fun Body(
                             )
                         }
                     }
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                    )
-                    Divider(
-                        color = Color.White,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 8.dp).padding(end= 32.dp)
-                    )
                 }
             }
         }

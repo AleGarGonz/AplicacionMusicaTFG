@@ -1,8 +1,8 @@
 package com.example.aplicacionmusicatfg.controladores
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
-import com.example.aplicacionmusicatfg.modelos.Genero
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
@@ -10,7 +10,7 @@ import java.io.File
 
 fun getImagenStorage(context: Context, fileName: String, callback: (File?, Exception?) -> Unit) {
     // Crear un archivo local persistente en el directorio de almacenamiento interno de la aplicación
-    val localFile = File(context.filesDir, "${fileName}.png")
+    val localFile = File(context.filesDir, "${fileName}")
     // Verificar si el archivo ya existe localmente
     if (localFile.exists()) {
         // Llamar al callback con el archivo local
@@ -18,7 +18,7 @@ fun getImagenStorage(context: Context, fileName: String, callback: (File?, Excep
     } else {
         // Si el archivo no existe localmente, descargarlo de Firebase Storage
         val storageRef = FirebaseStorage.getInstance().reference
-        val imgRef = storageRef.child("imagenes/${fileName}.png")
+        val imgRef = storageRef.child("imagenes/${fileName}")
 
         imgRef.getFile(localFile)
             .addOnSuccessListener {
@@ -33,7 +33,24 @@ fun getImagenStorage(context: Context, fileName: String, callback: (File?, Excep
     }
 }
 
-fun getListaImagenGenerosStorage(context: Context, generos: List<Genero>, callback: (List<File>?, Exception?) -> Unit) {
+fun subirImagenStorage(file: File) {
+    // Obtener la referencia al Firebase Storage
+    val storageRef = FirebaseStorage.getInstance().reference
+    // Crear una referencia al archivo en el Storage con un nombre único
+    val imgRef = storageRef.child("imagenes/${file.name}")
+
+    // Subir el archivo al Storage
+    imgRef.putFile(Uri.fromFile(file))
+        .addOnSuccessListener {
+            // La subida del archivo fue exitosa
+        }
+        .addOnFailureListener { exception ->
+            // Manejar errores de subida del archivo
+        }
+}
+
+
+/*fun getListaImagenGenerosStorage(context: Context, generos: List<Genero>, callback: (List<File>?, Exception?) -> Unit) {
     val archivosDescargados = mutableListOf<File>()
 
     generos.forEach { genero ->
@@ -76,4 +93,4 @@ fun getListaImagenGenerosStorage(context: Context, generos: List<Genero>, callba
     if (archivosDescargados.size == generos.size) {
         callback(archivosDescargados, null)
     }
-}
+}*/

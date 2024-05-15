@@ -52,4 +52,35 @@ class UsuarioController: ViewModel() {
             }
         })
     }
+
+    fun actualizarUsuario(usuario: Usuario, callback: (Boolean) -> Unit) {
+        val database = Firebase.database
+        val usuariosRef = database.getReference("Usuarios")
+
+        // Consultar la referencia del usuario en la base de datos
+        val usuarioQuery = usuariosRef.orderByChild("email").equalTo(usuario.email)
+
+        usuarioQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Verificar si se encontró el usuario
+                if (snapshot.exists()) {
+                    // Actualizar los datos del usuario
+                    for (usuarioSnapshot in snapshot.children) {
+                        usuarioSnapshot.ref.setValue(usuario)
+                    }
+                    // Llamar al callback indicando éxito
+                    callback(true)
+                } else {
+                    // No se encontró el usuario, llamar al callback indicando falla
+                    callback(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(ContentValues.TAG, "Error al leer el valor.", error.toException())
+                // Llamar al callback indicando falla
+                callback(false)
+            }
+        })
+    }
 }
