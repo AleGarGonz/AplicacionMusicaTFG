@@ -45,7 +45,20 @@ fun MiFooter(modifier: Modifier = Modifier,navController:NavController) {
             FooterIconButton(
                 drawableId = R.drawable.baseline_list_24,
                 contentDescription = "Inicio",
-                onClick = { /* Acción al hacer clic en el botón de Inicio */ }
+                onClick = {
+                    val currentDestinationId = navController.currentDestination?.id
+                    val listareproDestinationId = navController.graph.findNode(Rutas.ListaRepro.route)?.id
+                    if (currentDestinationId != null && listareproDestinationId != null) {
+                        navController.navigate(Rutas.ListaRepro.route) {
+                            popUpTo(currentDestinationId) {
+                                saveState = true
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                }
             )
             FooterIconButton(
                 drawableId = R.drawable.baseline_search_24,

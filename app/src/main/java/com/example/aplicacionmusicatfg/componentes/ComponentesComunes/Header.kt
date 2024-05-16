@@ -41,6 +41,7 @@ fun MiHeader(
         val currentDestinationId = navController.currentDestination?.id
         val generoDestinationId = navController.graph.findNode(Rutas.GenerosScreen.route)?.id
         val perfilDestinationId = navController.graph.findNode(Rutas.PerfilUsuario.route)?.id
+        val listareproDestinationId = navController.graph.findNode(Rutas.ListaRepro.route)?.id
         if(currentDestinationId == generoDestinationId ) {
             Text(
                 modifier = Modifier.padding(5.dp).padding(start = 6.dp),
@@ -64,6 +65,19 @@ fun MiHeader(
                         color = Color.Black
                     )
                 )
+            }else{
+                if(currentDestinationId == listareproDestinationId ) {
+                    Text(
+                        modifier = Modifier.padding(5.dp).padding(start = 6.dp),
+                        text = "Listas de\nReproducción",
+                        style = TextStyle(
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily.SansSerif,
+                            color = Color.Black
+                        )
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.width(16.dp))

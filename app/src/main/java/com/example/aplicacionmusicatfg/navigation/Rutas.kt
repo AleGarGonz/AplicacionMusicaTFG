@@ -16,4 +16,5 @@ sealed class Rutas(val route:String){
     object PerfilUsuario : Rutas("perfilusuario_screen")
 
     object EditarPerfil : Rutas("editarperfil_screen")
+    object ListaRepro : Rutas("listarepro_screen")
 }

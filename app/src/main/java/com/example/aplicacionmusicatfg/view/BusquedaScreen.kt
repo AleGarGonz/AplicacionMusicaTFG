@@ -79,9 +79,9 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
                     .padding(top = 12.dp)
                     .padding(horizontal = 12.dp),
                 style = TextStyle(
-                    fontSize = 20.sp, // Tamaño de fuente más grande
-                    fontWeight = FontWeight.Bold, // Tipo de letra en negrita
-                    fontFamily = FontFamily.SansSerif // Opcional: elige una fuente diferente si lo deseas
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.SansSerif
                 )
             )
         }

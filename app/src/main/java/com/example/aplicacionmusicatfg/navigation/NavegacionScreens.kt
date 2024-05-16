@@ -13,6 +13,7 @@ import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.example.aplicacionmusicatfg.view.EditarPerfilScreen
 import com.example.aplicacionmusicatfg.view.GenerosScreen
+import com.example.aplicacionmusicatfg.view.ListaReproScreen
 import com.example.aplicacionmusicatfg.view.PerfilUsuarioScreen
 import com.example.aplicacionmusicatfg.view.RecuperarContraScreen
 import com.example.aplicacionmusicatfg.view.RegistroScreen
@@ -74,6 +75,9 @@ fun NaveegacionScreens(){
         }
         composable(route= Rutas.EditarPerfil.route){
             EditarPerfilScreen(navController,logincontrol,usuariocontroller)
+        }
+        composable(route= Rutas.ListaRepro.route){
+            ListaReproScreen(navController,logincontrol)
         }
     }
 }

@@ -200,10 +200,8 @@ fun Body(
                     }
                     usuarioController.actualizarUsuario(usuario) { exito ->
                         if (exito) {
-                            // La actualización fue exitosa
                             Toast.makeText(context, "Actualizacion exitosa!", Toast.LENGTH_SHORT).show()
                         } else {
-                            // La actualización falló
                             Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
                         }
                     }

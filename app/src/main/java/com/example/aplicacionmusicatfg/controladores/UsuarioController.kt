@@ -27,11 +27,8 @@ class UsuarioController: ViewModel() {
     }
 
     fun descargarUsuario(emailBuscado: String, callback: (Usuario?) -> Unit) {
-        val database = Firebase.database
-        val usuariosRef = database.getReference("Usuarios")
-
         // Leer de la base de datos
-        usuariosRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var usuarioEncontrado: Usuario? = null
 
@@ -54,11 +51,9 @@ class UsuarioController: ViewModel() {
     }
 
     fun actualizarUsuario(usuario: Usuario, callback: (Boolean) -> Unit) {
-        val database = Firebase.database
-        val usuariosRef = database.getReference("Usuarios")
 
         // Consultar la referencia del usuario en la base de datos
-        val usuarioQuery = usuariosRef.orderByChild("email").equalTo(usuario.email)
+        val usuarioQuery = myRef.orderByChild("email").equalTo(usuario.email)
 
         usuarioQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
