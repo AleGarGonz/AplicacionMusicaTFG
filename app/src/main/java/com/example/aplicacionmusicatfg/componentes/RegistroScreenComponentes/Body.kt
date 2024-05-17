@@ -107,7 +107,7 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,password: String,nombre:String,navController: NavController,usuarioController: UsuarioController) {
+private fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,password: String,nombre:String,navController: NavController,usuarioController: UsuarioController) {
     val context = LocalContext.current
     Row(Modifier.padding(horizontal = 102.dp)){
         Button(
@@ -152,7 +152,7 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,pa
     }
 }
 @Composable
-fun EmailText(modifier: Modifier) {
+private fun EmailText(modifier: Modifier) {
     Text(
         text = "\t\t\t\tEmail",
         fontSize = 12.sp,
@@ -162,7 +162,7 @@ fun EmailText(modifier: Modifier) {
     )
 }
 @Composable
-fun PasswordText(modifier: Modifier) {
+private fun PasswordText(modifier: Modifier) {
     Text(
         text = "\t\t\t\tPassword",
         fontSize = 12.sp,
@@ -172,7 +172,7 @@ fun PasswordText(modifier: Modifier) {
     )
 }
 @Composable
-fun Nombretext(modifier: Modifier) {
+private fun Nombretext(modifier: Modifier) {
     Text(
         text = "\t\t\t\tNombre",
         fontSize = 12.sp,
@@ -182,7 +182,7 @@ fun Nombretext(modifier: Modifier) {
     )
 }
 @Composable
-fun AddsManagertext(modifier: Modifier) {
+private fun AddsManagertext(modifier: Modifier) {
     Text(
         text = "to continue",
         fontSize = 16.sp,
@@ -192,7 +192,7 @@ fun AddsManagertext(modifier: Modifier) {
     )
 }
 @Composable
-fun LogIntext(modifier: Modifier) {
+private fun LogIntext(modifier: Modifier) {
     Text(
         text = "Sing Up",
         fontSize = 30.sp,
@@ -203,7 +203,7 @@ fun LogIntext(modifier: Modifier) {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Password(password: String, onTextChanged: (String) -> Unit) {
+private fun Password(password: String, onTextChanged: (String) -> Unit) {
     var showPassword by rememberSaveable {
         mutableStateOf(false)
     }
@@ -254,7 +254,7 @@ fun Password(password: String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Email(email: String, onTextChanged: (String) -> Unit) {
+private fun Email(email: String, onTextChanged: (String) -> Unit) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
@@ -278,7 +278,7 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Nombre(nombre: String, onTextChanged: (String) -> Unit) {
+private fun Nombre(nombre: String, onTextChanged: (String) -> Unit) {
     TextField(
         value = nombre,
         onValueChange = { onTextChanged(it) },
@@ -302,7 +302,7 @@ fun Nombre(nombre: String, onTextChanged: (String) -> Unit) {
 
 
 @Composable
-fun ImageLogo(modifier: Modifier) {
+private fun ImageLogo(modifier: Modifier) {
     Image(
         painter = painterResource(id = R.drawable.logoappmusicatfg),
         contentDescription = "logo",
@@ -313,6 +313,6 @@ fun ImageLogo(modifier: Modifier) {
 }
 
 
-fun isValidEmail(email: String): Boolean {
+private fun isValidEmail(email: String): Boolean { //Estaria bien buscar los metodos que son iguales y se repiten y ponerlos en un sitio
     return PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 }

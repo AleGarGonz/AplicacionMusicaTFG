@@ -80,7 +80,7 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
     }
     if(pantalllaVisible) {
         musicPlayerController.setFile(CancionFile)
-        PantallaCancion2(
+        Contenido(
             onStopClick = { musicPlayerController.stopAndReset() },
             onPlayClick = { musicPlayerController.playOrPauseOneFile() },
             musicPlayerController = musicPlayerController,
@@ -106,7 +106,7 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
 
 
 @Composable
-fun PantallaCancion2(
+fun Contenido(
     onStopClick: () -> Unit,
     onPlayClick: () -> Unit,
     cancion: Cancion,
@@ -239,14 +239,14 @@ fun PantallaCancion2(
     }
 }
 
-fun validarImagen(ImagenFile: File?): Boolean {
+private fun validarImagen(ImagenFile: File?): Boolean {
     return ImagenFile != null &&
             ImagenFile.isFile &&
             ImagenFile.exists() &&
             ImagenFile.length() > 0L
 }
 
-fun validarCancion(AudioFile: File?): Boolean {
+private fun validarCancion(AudioFile: File?): Boolean {
     return AudioFile != null &&
             AudioFile.isFile &&
             AudioFile.exists() &&

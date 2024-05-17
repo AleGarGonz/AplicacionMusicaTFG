@@ -157,7 +157,7 @@ fun ListaReproduccionItem(nombreLista: String) {
 }
 
 @Composable
-fun BotonNuevaLista(onClick: () -> Unit) {
+private fun BotonNuevaLista(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(Color.Cyan),

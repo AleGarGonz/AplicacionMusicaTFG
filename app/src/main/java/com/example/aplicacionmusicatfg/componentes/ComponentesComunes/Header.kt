@@ -103,7 +103,7 @@ fun MiHeader(
 }
 
 @Composable
-fun CerrarSesionDialog(
+private fun CerrarSesionDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     loginController: LoginController,

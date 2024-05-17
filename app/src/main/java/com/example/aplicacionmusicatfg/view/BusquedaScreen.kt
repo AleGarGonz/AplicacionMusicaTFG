@@ -126,7 +126,7 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController, navController: NavController) {
+private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController, navController: NavController) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -135,7 +135,6 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
     val onStopClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.stopAndReset() }}
     val onPlayClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playOrPause()} }
     val onSiguienteClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playNext()} }
-    val (iconButtonClicked, setIconButtonClicked) = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,29 +152,26 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                 Text(text = "${cancion.titulo}", fontSize = 21.sp)
                 Text(text = "${cancion.artista}", fontSize = 17.sp)
             }
-            // IconButton que se desactiva después de hacer clic una vez
-            if (!iconButtonClicked) {
-                IconButton(
-                    onClick = {
-                        navController.navigate(
-                            route = Rutas.CancionScreen.createRoute(
-                                cancion.artista,
-                                cancion.audio,
-                                cancion.genero,
-                                cancion.imagen,
-                                cancion.titulo
-                            )
+            IconButton(
+                onClick = {
+                    navController.navigate(
+                        route = Rutas.CancionScreen.createRoute(
+                            cancion.artista,
+                            cancion.audio,
+                            cancion.genero,
+                            cancion.imagen,
+                            cancion.titulo
                         )
-                        setIconButtonClicked(true)
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
-                    Icon(painter = stopIcon, contentDescription = "MasInfo")
-                }
+                    )
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
+                Icon(painter = stopIcon, contentDescription = "MasInfo")
             }
+
         }
-        if(isSheetOpen && !iconButtonClicked){
+        if(isSheetOpen){
             ModalBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = {
@@ -184,7 +180,7 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
 
                 }) {
                 if(listCanciones.size >=1){
-                    PantallaCancion(
+                    Reproductor(
                         onAnteriorClick = onAnteriorClick,
                         onStopClick = onStopClick,
                         onPlayClick = onPlayClick,
@@ -207,7 +203,7 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
     }
 }
 //Metodo para obtener la posicion del mp3 en la lista
-fun obtenerPosicionArchivo(files: List<File>, nombreArchivo: String): Int {
+private fun obtenerPosicionArchivo(files: List<File>, nombreArchivo: String): Int {
     for ((index, file) in files.withIndex()) {
         if (file.absoluteFile.name.contains(nombreArchivo)) {
             return index
@@ -216,7 +212,7 @@ fun obtenerPosicionArchivo(files: List<File>, nombreArchivo: String): Int {
     return -1
 }
 @Composable
-fun PantallaCancion(
+private fun Reproductor(
     onAnteriorClick: () -> Unit,
     onStopClick: () -> Unit,
     onPlayClick: () -> Unit,
@@ -284,7 +280,7 @@ fun PantallaCancion(
     }
 }
 
-fun validarAudioLista(listaArchivos: List<File?>): Boolean {
+private fun validarAudioLista(listaArchivos: List<File?>): Boolean {
     return listaArchivos.all {
         it != null &&
                 it.isFile &&

@@ -72,7 +72,7 @@ fun Body(modifier: Modifier,logincontrol: LoginController,navController: NavCont
 }
 
 @Composable
-fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,navController: NavController) {
+private fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,navController: NavController) {
     val context = LocalContext.current
     Row(Modifier.padding(horizontal = 102.dp)){
         Button(
@@ -112,7 +112,7 @@ fun LoginButton(loginEnable: Boolean,viewModel: LoginController,email: String,na
     }
 }
 @Composable
-fun UsernameText(modifier: Modifier) {
+private fun UsernameText(modifier: Modifier) {
     Text(
         text = "\t\t\t\tEmail",
         fontSize = 12.sp,
@@ -122,7 +122,7 @@ fun UsernameText(modifier: Modifier) {
     )
 }
 @Composable
-fun AddsManagertext(modifier: Modifier) {
+private fun AddsManagertext(modifier: Modifier) {
     Text(
         text = "to continue",
         fontSize = 16.sp,
@@ -132,7 +132,7 @@ fun AddsManagertext(modifier: Modifier) {
     )
 }
 @Composable
-fun LogIntext(modifier: Modifier) {
+private fun LogIntext(modifier: Modifier) {
     Text(
         text = "Reset Password",
         fontSize = 30.sp,
@@ -144,7 +144,7 @@ fun LogIntext(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Email(email: String, onTextChanged: (String) -> Unit) {
+private fun Email(email: String, onTextChanged: (String) -> Unit) {
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
@@ -168,7 +168,7 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
 
 
 @Composable
-fun ImageLogo(modifier: Modifier) {
+private fun ImageLogo(modifier: Modifier) {
     Image(
         painter = painterResource(id = R.drawable.logoappmusicatfg),
         contentDescription = "logo",
@@ -179,6 +179,6 @@ fun ImageLogo(modifier: Modifier) {
 }
 
 
-fun isValidEmail(email: String): Boolean {
+private fun isValidEmail(email: String): Boolean {
     return PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 }

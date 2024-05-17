@@ -260,7 +260,7 @@ fun Body(
 }
 
 @Composable
-fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Context) {
+private fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Context) {
     val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -285,7 +285,7 @@ fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Context) {
     }
 }
 
-fun getFileFromUri(uri: Uri, context: Context): File? {
+private fun getFileFromUri(uri: Uri, context: Context): File? {
     val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
     val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
     cursor?.moveToFirst()
@@ -296,7 +296,7 @@ fun getFileFromUri(uri: Uri, context: Context): File? {
 }
 
 @Composable
-fun ShowImage(ImagenFile: File?) {
+private fun ShowImage(ImagenFile: File?) {
     if (ImagenFile != null) {
         val bitmap: Bitmap = BitmapFactory.decodeFile(ImagenFile.absolutePath)
         val imageBitmap = bitmap.asImageBitmap()
@@ -320,7 +320,7 @@ fun ShowImage(ImagenFile: File?) {
     }
 }
 @Composable
-fun ShowImageActualizado(ImagenFile: File?) {
+private fun ShowImageActualizado(ImagenFile: File?) {
     println("El archivo del album pero en show image: "+ImagenFile?.absolutePath)
     if (ImagenFile != null) {
         val inputStream = FileInputStream(ImagenFile)
@@ -352,7 +352,7 @@ fun ShowImageActualizado(ImagenFile: File?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Nombre(nombre: String,nombreActual:String, onTextChanged: (String) -> Unit) {
+private fun Nombre(nombre: String,nombreActual:String, onTextChanged: (String) -> Unit) {
     TextField(
         value = nombre,
         onValueChange = { onTextChanged(it) },
@@ -384,7 +384,7 @@ fun Nombre(nombre: String,nombreActual:String, onTextChanged: (String) -> Unit) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Biografia(bio: String,bioActual:String, onTextChanged: (String) -> Unit) {
+private fun Biografia(bio: String,bioActual:String, onTextChanged: (String) -> Unit) {
     TextField(
         value = bio,
         onValueChange = { onTextChanged(it) },
@@ -416,7 +416,7 @@ fun Biografia(bio: String,bioActual:String, onTextChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Genero(gen: String,genActual:String, onTextChanged: (String) -> Unit) {
+private fun Genero(gen: String,genActual:String, onTextChanged: (String) -> Unit) {
     TextField(
         value = gen,
         onValueChange = { onTextChanged(it) },
@@ -456,7 +456,7 @@ fun Genero(gen: String,genActual:String, onTextChanged: (String) -> Unit) {
     )
 }
 @Composable
-fun BotonActualizar(onClick: () -> Unit) {
+private fun BotonActualizar(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier

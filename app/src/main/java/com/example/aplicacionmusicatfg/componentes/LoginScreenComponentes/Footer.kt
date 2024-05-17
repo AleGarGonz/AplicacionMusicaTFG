@@ -42,14 +42,14 @@ fun Footer(modifier: Modifier,navController: NavController) {
 
 }
 @Composable
-fun SignUp(onClick: () -> Unit) {
+private fun SignUp(onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         SignUpText(onClick)
     }
 }
 
 @Composable
-fun SignUpText(onClick: () -> Unit) {
+private fun SignUpText(onClick: () -> Unit) {
     Text(
         text = "¿No tienes cuenta? Registrate",
         modifier = Modifier.clickable { onClick() }.padding(horizontal = 8.dp),

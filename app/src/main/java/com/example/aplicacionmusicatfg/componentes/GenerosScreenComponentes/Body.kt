@@ -108,13 +108,13 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                 )
             )
 
-            GenreList(modifier = Modifier.fillMaxWidth(), navController)
+            GeneroList(modifier = Modifier.fillMaxWidth(), navController)
         }
 }
 
 
 @Composable
-fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
+private fun GeneroList(modifier: Modifier = Modifier,navController: NavController) {
     var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
     var ImagenFile: File? = null;
     var cardVisible by rememberSaveable { mutableStateOf(false) }
@@ -169,7 +169,7 @@ fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
 }
 
 @Composable
-fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navController: NavController) {
+private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navController: NavController) {
     val randomColor by remember { mutableStateOf(generateRandomColor()) }
     fun isDark(color: Color): Boolean {
         val luminance = 0.2126f * color.red + 0.7152f * color.green + 0.0722f * color.blue
@@ -252,7 +252,7 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
 }
 
 @Composable
-fun InformacionDialog(texto: String, onDismissRequest: () -> Unit) {
+private fun InformacionDialog(texto: String, onDismissRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
@@ -283,7 +283,7 @@ private fun generateRandomColor(): Color {
     )
 }
 
-fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
+private fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
     return ImagenFile != null &&
             ImagenFile.isFile &&
             ImagenFile.exists() &&

@@ -101,7 +101,7 @@ fun MiFooter(modifier: Modifier = Modifier,navController:NavController) {
 }
 
 @Composable
-fun FooterIconButton(drawableId: Int, contentDescription: String, onClick: () -> Unit) {
+private fun FooterIconButton(drawableId: Int, contentDescription: String, onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
         modifier = Modifier.height(40.dp),

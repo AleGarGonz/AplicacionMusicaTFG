@@ -214,7 +214,7 @@ fun Body(
             }
         }
     }
-fun validarImagenUsuario(ImagenFile: File?, usuario: Usuario): Boolean {
+private fun validarImagenUsuario(ImagenFile: File?, usuario: Usuario): Boolean {
     return ImagenFile != null &&
             ImagenFile.isFile &&
             ImagenFile.exists() &&
