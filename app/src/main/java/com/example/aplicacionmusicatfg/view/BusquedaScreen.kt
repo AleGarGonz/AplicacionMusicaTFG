@@ -42,7 +42,7 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
     var listaDeArchivos: List<File> by remember { mutableStateOf(emptyList()) }
-
+    var lazyColumnVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(searchText) {
         if(genero!!.contains("Def")){
@@ -106,9 +106,16 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
                         }
                     }
                 }
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(canciones) { cancion ->
-                        CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,navController)
+                if(!lazyColumnVisible){
+                    LaunchedEffect(validarAudioLista(listaDeArchivos)){
+                        lazyColumnVisible = true
+                    }
+                }
+                if(lazyColumnVisible){
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(canciones) { cancion ->
+                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,navController)
+                        }
                     }
                 }
             } else {
@@ -159,7 +166,6 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                                 cancion.titulo
                             )
                         )
-                        // Marcar el IconButton como clicado
                         setIconButtonClicked(true)
                     },
                     modifier = Modifier.weight(1f)
@@ -275,5 +281,14 @@ fun PantallaCancion(
                 Icon(painter = siguienteIcon, contentDescription = "Siguiente")
             }
         }
+    }
+}
+
+fun validarAudioLista(listaArchivos: List<File?>): Boolean {
+    return listaArchivos.all {
+        it != null &&
+                it.isFile &&
+                it.exists() &&
+                it.length() > 0L
     }
 }

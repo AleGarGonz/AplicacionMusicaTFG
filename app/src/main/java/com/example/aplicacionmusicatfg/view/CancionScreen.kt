@@ -55,9 +55,10 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
 
     var CancionFile: File? = null;
     var ImagenFile: File? = null;
+    var pantalllaVisible by rememberSaveable { mutableStateOf(false) }
 
-    //No es un metodo para llamar
-    //Esto obtiene la cancion especifica para usarlo en la clase cancion
+    //Usar un objeto Cancion Controlador e Imagen Controllador
+
     getCancionStorage(LocalContext.current,cancion.audio) { archivo, excepcion ->
         if (excepcion != null) {
             println("Error al descargar archivos: ${excepcion.message}")
@@ -72,7 +73,12 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             ImagenFile = archivo
         }
     }
-    if(CancionFile != null && ImagenFile !=null) {
+    if(!pantalllaVisible){
+        LaunchedEffect(validarImagen(ImagenFile) && validarCancion(CancionFile)){
+            pantalllaVisible = true
+        }
+    }
+    if(pantalllaVisible) {
         musicPlayerController.setFile(CancionFile)
         PantallaCancion2(
             onStopClick = { musicPlayerController.stopAndReset() },
@@ -81,7 +87,7 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             cancion = cancion,
             imagen = ImagenFile
         )
-        BackHandler(onBack = {
+        BackHandler(onBack = {//Detecta cuando vas para atras lo podria añadir en las pantallas principales
             navController.popBackStack()
             musicPlayerController.release()
         })
@@ -158,9 +164,9 @@ fun PantallaCancion2(
                 fontSize = 15.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if(imagen != null){
+            if(validarImagen(imagen)){
                 // Lee el archivo en un Bitmap
-                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen.absolutePath)
+                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
 
                 // Convierte el Bitmap en un ImageBitmap
                 val imageBitmap = bitmap.asImageBitmap()
@@ -172,7 +178,7 @@ fun PantallaCancion2(
                         .width(240.dp)
                 )
             }else{
-                Image(
+                Image(//Siempre de primeras muestra la imagen esta por defecto no se si es que no hace bien la descarga o que, luego los demas inicios sale la imagen cargada
                     painter = painterResource(id = R.drawable.pordefecto),
                     contentDescription = "Descripción de la imagen",
                     modifier = Modifier
@@ -231,4 +237,18 @@ fun PantallaCancion2(
             }
         }
     }
+}
+
+fun validarImagen(ImagenFile: File?): Boolean {
+    return ImagenFile != null &&
+            ImagenFile.isFile &&
+            ImagenFile.exists() &&
+            ImagenFile.length() > 0L
+}
+
+fun validarCancion(AudioFile: File?): Boolean {
+    return AudioFile != null &&
+            AudioFile.isFile &&
+            AudioFile.exists() &&
+            AudioFile.length() > 0L
 }

@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +62,8 @@ fun Body(
 
     var ImagenFile: File? = null;
 
+    var imagenPerfilVisible by rememberSaveable { mutableStateOf(false) }
+
     // Descargar y asignar el usuario al estado cuando esté disponible
     LaunchedEffect(key1 = emailBuscado) {
         usuarioController.descargarUsuario(emailBuscado) { usuarioDescargado ->
@@ -77,13 +80,20 @@ fun Body(
                     ImagenFile = archivo
                 }
             }
+            if(!imagenPerfilVisible){
+                LaunchedEffect(
+                    validarImagenUsuario(ImagenFile,usuario)){
+                    imagenPerfilVisible = true
+                }
+            }
         }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .height(140.dp)
                 .background(
-                    color = Color.Black//Poner un fondo wapo o algo
+                    color = Color.Black
                 )
         )
         Box(
@@ -98,10 +108,10 @@ fun Body(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top =85.dp).padding(start = 4.dp),
+                .padding(top =95.dp).padding(start = 4.dp),
             horizontalAlignment = Alignment.Start,
         ) {
-            if(ImagenFile != null) {
+            if(validarImagenUsuario(ImagenFile,usuario)) {
                 // Lee el archivo en un Bitmap
                 val bitmap: Bitmap = BitmapFactory.decodeFile(ImagenFile!!.absolutePath)
 
@@ -204,3 +214,12 @@ fun Body(
             }
         }
     }
+fun validarImagenUsuario(ImagenFile: File?, usuario: Usuario): Boolean {
+    return ImagenFile != null &&
+            ImagenFile.isFile &&
+            ImagenFile.exists() &&
+            ImagenFile.length() > 0L &&
+            usuario.fotoperfil != null &&
+            usuario.fotoperfil.isNotBlank() &&
+            usuario.fotoperfil.isNotEmpty()
+}

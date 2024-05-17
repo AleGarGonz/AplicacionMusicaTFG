@@ -59,6 +59,7 @@ import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.controladores.subirImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Usuario
+import com.example.aplicacionmusicatfg.navigation.Rutas
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
@@ -78,6 +79,7 @@ fun Body(
     var ImagenFile by remember { mutableStateOf<File?>(null) }
     var ImagenFileActualizado by remember { mutableStateOf<File?>(null) }
     var imagenActualizada by remember { mutableStateOf(false) }
+    val currentDestinationId = navController.currentDestination?.id
     val context = LocalContext.current
 
     var nombre by rememberSaveable {
@@ -184,25 +186,71 @@ fun Body(
                 Spacer(modifier = modifier.height(16.dp))
                 BotonActualizar() {
                     if (imagenActualizada) {
-                        ImagenFileActualizado?.let { subirImagenStorage(file = it) }
-                        // Obtener el nombre del archivo sin la extensión
-                        val fileNameWithoutExtension = ImagenFileActualizado?.name.toString()
-                        usuario.fotoperfil = fileNameWithoutExtension
-                    }
-                    if(biografia != usuario.biografia && biografia.isNotEmpty()){
-                        usuario.biografia = biografia
-                    }
-                    if(genero != usuario.generofav && genero.isNotEmpty()){
-                        usuario.generofav = genero
-                    }
-                    if(nombre != usuario.nombre && nombre.isNotEmpty()){
-                        usuario.nombre = nombre
-                    }
-                    usuarioController.actualizarUsuario(usuario) { exito ->
-                        if (exito) {
-                            Toast.makeText(context, "Actualizacion exitosa!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
+                        ImagenFileActualizado?.let {
+                            subirImagenStorage(
+                                it,
+                                onSuccess = {
+                                    val fileName = ImagenFileActualizado!!.name
+                                    usuario.fotoperfil = fileName
+                                    if (biografia != usuario.biografia && biografia.isNotEmpty()) {
+                                        usuario.biografia = biografia
+                                    }
+                                    if (genero != usuario.generofav && genero.isNotEmpty()) {
+                                        usuario.generofav = genero
+                                    }
+                                    if (nombre != usuario.nombre && nombre.isNotEmpty()) {
+                                        usuario.nombre = nombre
+                                    }
+                                    usuarioController.actualizarUsuario(usuario) { exito ->
+                                        if (exito) {
+                                            Toast.makeText(context, "Actualización exitosa!", Toast.LENGTH_SHORT).show()
+                                            if(currentDestinationId != null){
+                                                navController.navigate(route = Rutas.PerfilUsuario.route){
+                                                    popUpTo(currentDestinationId) {
+                                                        saveState = true
+                                                        inclusive = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
+                                                }
+                                            }
+                                        } else {
+                                            Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                onCanceled = {
+                                    // Acciones a realizar en caso de cancelación
+                                    Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    }else{
+                        if (biografia != usuario.biografia && biografia.isNotEmpty()) {
+                            usuario.biografia = biografia
+                        }
+                        if (genero != usuario.generofav && genero.isNotEmpty()) {
+                            usuario.generofav = genero
+                        }
+                        if (nombre != usuario.nombre && nombre.isNotEmpty()) {
+                            usuario.nombre = nombre
+                        }
+                        usuarioController.actualizarUsuario(usuario) { exito ->
+                            if (exito) {
+                                Toast.makeText(context, "Actualización exitosa!", Toast.LENGTH_SHORT).show()
+                                if(currentDestinationId != null){
+                                    navController.navigate(route = Rutas.PerfilUsuario.route){
+                                        popUpTo(currentDestinationId) {
+                                            saveState = true
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

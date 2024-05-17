@@ -22,9 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -114,6 +117,7 @@ fun MiBody(modifier: Modifier,navController: NavController) {
 fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
     var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
     var ImagenFile: File? = null;
+    var cardVisible by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
@@ -121,27 +125,34 @@ fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
             getListaGenerosRealtime { generos ->
                 listaGeneros = generos
             }
-                LazyColumn(
-                    modifier = modifier.padding(vertical = 8.dp)
-                ) {
-                    items(listaGeneros.chunked(2)) { rowItems ->
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            for (genre in rowItems) {
-                                getImagenStorage(
-                                    LocalContext.current,
-                                    genre.imagen
-                                ) { archivo, excepcion ->
-                                    if (excepcion != null) {
-                                        println("Error al descargar archivos: ${excepcion.message}")
-                                    } else {
-                                        if (archivo?.absoluteFile!!.name.contains(genre.imagen)) {
-                                            ImagenFile = archivo
-                                        }
+            LazyColumn(
+                modifier = modifier.padding(vertical = 8.dp)
+            ) {
+                items(listaGeneros.chunked(2)) { rowItems ->
+                    Row(
+                        Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        for (genre in rowItems) {
+                            getImagenStorage(
+                                LocalContext.current,
+                                genre.imagen
+                            ) { archivo, excepcion ->
+                                if (excepcion != null) {
+                                    println("Error al descargar archivos: ${excepcion.message}")
+                                } else {
+                                    val nombreImagen = genre.imagen?.substringBeforeLast(".")
+                                    if (archivo?.absoluteFile!!.name.contains(nombreImagen.toString())) {
+                                        ImagenFile = archivo
                                     }
                                 }
+                            }
+                            if(!cardVisible){
+                                LaunchedEffect(validarImagenGenero(ImagenFile,genre)){
+                                    cardVisible = true
+                                }
+                            }
+                            if(cardVisible){
                                 GeneroCard(
                                     genero = genre,
                                     modifier = Modifier.weight(1f),
@@ -150,9 +161,10 @@ fun GenreList(modifier: Modifier = Modifier,navController: NavController) {
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
     }
 }
 
@@ -163,10 +175,8 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
         val luminance = 0.2126f * color.red + 0.7152f * color.green + 0.0722f * color.blue
         return luminance < 0.5f
     }
-
     val textColor = if (isDark(randomColor)) Color.White else Color.Black
     var showDialog by remember { mutableStateOf(false) }
-
     if (showDialog) {
         InformacionDialog(
             texto = genero.descripcion,
@@ -176,23 +186,22 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
     Card(
         modifier = modifier
             .padding(horizontal = 5.dp)
-            .height(150.dp)
-            .fillMaxWidth()
+            .height(130.dp)
             .clickable { navController.navigate(Rutas.BusquedaScreen.createRoute(genero.nombre)) },
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = randomColor,
-            contentColor = Color.White,
         ),
         border = BorderStroke(4.dp, Color.Black)
     ) {
         Column(
-            verticalArrangement = Arrangement.Top
+            modifier.fillMaxSize()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -200,12 +209,10 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
                     color = textColor,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(vertical = 14.dp).padding(start = 4.dp)
                 )
                 IconButton(
                     onClick = { showDialog = true },
-                    modifier = Modifier.padding(start = 2.dp)
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 ) {
                     Icon(
                         painter =  painterResource(id = R.drawable.baseline_info_24),
@@ -214,30 +221,31 @@ fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navCo
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                if (validarImagenGenero(imagen,genero)) {
+                    // Lee el archivo en un Bitmap
+                    val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
 
-            if(imagen != null){
-                // Lee el archivo en un Bitmap
-                val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
-
-                // Convierte el Bitmap en un ImageBitmap
-                val imageBitmap = bitmap.asImageBitmap()
-                Image(
-                    bitmap = imageBitmap,
-                    contentDescription = "Descripción de la imagen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .aspectRatio(1.5f)
-                        .scale(1f)
-                )
-            }else{
-                Image(
-                    painter = painterResource(id = R.drawable.pordefecto),
-                    contentDescription = "Descripción de la imagen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .aspectRatio(1f)
-                )
+                    // Convierte el Bitmap en un ImageBitmap
+                    val imageBitmap = bitmap.asImageBitmap()
+                    Image(
+                        bitmap = imageBitmap,
+                        contentDescription = "Descripción de la imagen",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .scale(1f),
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.pordefecto),
+                        contentDescription = "Descripción de la imagen",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(2f),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
             }
         }
     }
@@ -273,4 +281,14 @@ private fun generateRandomColor(): Color {
         blue = random.nextFloat(),
         alpha = 1f
     )
+}
+
+fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
+    return ImagenFile != null &&
+            ImagenFile.isFile &&
+            ImagenFile.exists() &&
+            ImagenFile.length() > 0L &&
+            genero.imagen != null &&
+            genero.imagen.isNotBlank() &&
+            genero.imagen.isNotEmpty()
 }

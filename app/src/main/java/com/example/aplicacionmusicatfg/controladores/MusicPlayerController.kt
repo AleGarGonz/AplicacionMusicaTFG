@@ -31,11 +31,15 @@ class MusicPlayerController {
     }
 
     fun setListAndIndex(files: List<File>, index: Int) {
-        mediaPlayerManager.setListAndIndex(files, index)
+        if(validarAudioLista(files)){
+            mediaPlayerManager.setListAndIndex(files, index)
+        }
     }
     //Para un unico archivo
     fun setFile(file:File?) {
-        mediaPlayerManager.setFile(file)
+        if(validarAudio(file)){
+            mediaPlayerManager.setFile(file)
+        }
     }
 
     fun getCurrentPosition(): Int {
@@ -47,5 +51,19 @@ class MusicPlayerController {
 
     fun seekTo(position: Int) {
         mediaPlayerManager.seekTo(position)
+    }
+    private fun validarAudio(AudioFile: File?): Boolean {
+        return AudioFile != null &&
+                AudioFile.isFile &&
+                AudioFile.exists() &&
+                AudioFile.length() > 0L
+    }
+    private fun validarAudioLista(listaArchivos: List<File?>): Boolean {
+        return listaArchivos.all {
+            it != null &&
+                    it.isFile &&
+                    it.exists() &&
+                    it.length() > 0L
+        }
     }
 }

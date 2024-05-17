@@ -33,19 +33,18 @@ fun getImagenStorage(context: Context, fileName: String, callback: (File?, Excep
     }
 }
 
-fun subirImagenStorage(file: File) {
-    // Obtener la referencia al Firebase Storage
+fun subirImagenStorage(file: File, onSuccess: () -> Unit, onCanceled: () -> Unit) {
     val storageRef = FirebaseStorage.getInstance().reference
-    // Crear una referencia al archivo en el Storage con un nombre único
     val imgRef = storageRef.child("imagenes/${file.name}")
 
-    // Subir el archivo al Storage
     imgRef.putFile(Uri.fromFile(file))
         .addOnSuccessListener {
-            // La subida del archivo fue exitosa
+            onSuccess()
+        }
+        .addOnCanceledListener {
+            onCanceled()
         }
         .addOnFailureListener { exception ->
-            // Manejar errores de subida del archivo
         }
 }
 
