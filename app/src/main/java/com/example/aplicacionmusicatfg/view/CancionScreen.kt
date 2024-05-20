@@ -4,11 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -106,7 +109,7 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
 
 
 @Composable
-fun Contenido(
+private fun Contenido(
     onStopClick: () -> Unit,
     onPlayClick: () -> Unit,
     cancion: Cancion,
@@ -142,7 +145,16 @@ fun Contenido(
             }
         }
     }
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .height(140.dp)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Blue.copy(alpha = 0.9f), Color.Black),//Tengo que ponerle un fondo chulo
+                )
+            )
+    )
     Box(
         modifier = Modifier
             .fillMaxWidth()

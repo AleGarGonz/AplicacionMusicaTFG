@@ -11,9 +11,9 @@ class ListaReproController {
     private val database = Firebase.database
     private val myRef = database.getReference("Listasrepro")
 
-    fun subirListaReproduccion(listaReproduccion: ListaReproduccion,uid:String) {
+    fun subirListaReproduccion(listaReproduccion: ListaReproduccion,uid:String,idlista:String) {
         // Generar una nueva clave única para la lista de reproducción
-        val nuevaListaRef = myRef.child(uid).child("1")
+        val nuevaListaRef = myRef.child(uid).child(idlista)
 
         // Subir la lista de reproducción a la base de datos
         nuevaListaRef.setValue(listaReproduccion)
@@ -24,9 +24,27 @@ class ListaReproController {
                 println("Error al subir la lista de reproducción a Firebase: $exception")
             }
     }
+    fun actualizarListaReproduccion(listaReproduccion: ListaReproduccion, uid: String, idLista: String) {
+        // Crear un mapa para almacenar los campos que se van a actualizar
+        val actualizacionMap = mutableMapOf<String, Any?>()
+        actualizacionMap["Listanombre"] = listaReproduccion.Listanombre
+        actualizacionMap["Canciones"] = listaReproduccion.Canciones
 
-    fun descargarListaReproduccion(uid: String, listaNumero: Int, callback: (ListaReproduccion?) -> Unit) {
-        val listaRef = myRef.child(uid).child(listaNumero.toString())
+        // Referencia a la lista de reproducción a actualizar
+        val listaRef = myRef.child(uid).child(idLista)
+
+        // Actualizar la lista de reproducción en la base de datos
+        listaRef.updateChildren(actualizacionMap)
+            .addOnSuccessListener {
+                println("La lista de reproducción se actualizó exitosamente en Firebase.")
+            }
+            .addOnFailureListener { exception ->
+                println("Error al actualizar la lista de reproducción en Firebase: $exception")
+            }
+    }
+
+    fun descargarListaReproduccion(uid: String, listaId: String, callback: (ListaReproduccion?) -> Unit) {
+        val listaRef = myRef.child(uid).child(listaId)
 
         // Escuchar una vez para obtener la lista de reproducción
         listaRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -65,5 +83,19 @@ class ListaReproController {
                 println("Error al descargar las listas de reproducción: $error")
             }
         })
+    }
+
+    fun borrarListaReproduccion(uid: String, listaId: String) {
+        // Referencia a la lista de reproducción que se va a borrar
+        val listaRef = myRef.child(uid).child(listaId)
+
+        // Borrar la lista de reproducción de la base de datos
+        listaRef.removeValue()
+            .addOnSuccessListener {
+                println("La lista de reproducción se borró exitosamente de Firebase.")
+            }
+            .addOnFailureListener { exception ->
+                println("Error al borrar la lista de reproducción de Firebase: $exception")
+            }
     }
 }

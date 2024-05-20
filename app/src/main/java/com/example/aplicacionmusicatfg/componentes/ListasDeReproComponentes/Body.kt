@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.ListaReproComponentes
+package com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,13 +14,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,31 +45,9 @@ import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.ListaReproController
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
+import com.example.aplicacionmusicatfg.navigation.Rutas
 
-val listasreprocontroller = ListaReproController()
-/*// Crear una lista de canciones
-val canciones = listOf(
-    Cancion().apply {
-        artista = "Artista 1"
-        audio = "ruta/audio1.mp3"
-        genero = "Género 1"
-        imagen = "ruta/imagen1.jpg"
-        titulo = "Canción 1"
-    },
-    Cancion().apply {
-        artista = "Artista 2"
-        audio = "ruta/audio2.mp3"
-        genero = "Género 2"
-        imagen = "ruta/imagen2.jpg"
-        titulo = "Canción 2"
-    }
-)
-
-// Crear una lista de reproducción y asignarle las canciones
-val listaReproduccion = ListaReproduccion().apply {
-    Listanombre = "Mi Lista de Reproducción"
-    Canciones = canciones
-}*/
+val listasreprocontroller = ListaReproController() //Igual estaria bien ponerlo fuera no lo se...
 @Composable
 fun Body(
     modifier: Modifier,
@@ -76,6 +56,8 @@ fun Body(
 ) {
     val uid = logincontrol.getCurrentUser()?.uid.toString()
     var listasReproduccionDescargadas by remember { mutableStateOf(emptyList<ListaReproduccion>()) }
+    var showDialog by remember { mutableStateOf(false) }
+    var actualizarlista  by remember { mutableStateOf(true) }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +70,7 @@ fun Body(
     )
     Column(modifier = modifier
         .fillMaxSize()
-        .padding(top=80.dp)
+        .padding(top=80.dp).padding(bottom = 44.dp)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -96,7 +78,7 @@ fun Body(
             modifier = Modifier.align(Alignment.End).padding(end = 26.dp)
         ) {
             BotonNuevaLista(onClick = {
-                // Por hacer el cambio
+                showDialog = true
             })
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -108,26 +90,54 @@ fun Body(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Descargar todas las listas de reproducción
-        LaunchedEffect(Unit) {
+        LaunchedEffect(actualizarlista) {
             listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listas ->
                 listasReproduccionDescargadas = listas
+                actualizarlista = false
             }
         }
-            ListaReproduccionCards(listas = listasReproduccionDescargadas,modifier)
+        ListaReproduccionCards(listas = listasReproduccionDescargadas, modifier,navController) { listaId ->
+            listasreprocontroller.borrarListaReproduccion(uid, listaId)
+            listasReproduccionDescargadas = listasReproduccionDescargadas.filterNot { it.id == listaId }
+        }
+    }
+    if (showDialog) {
+        CrearListaDialog(
+            onDismiss = { showDialog = false },
+            onCreate = { nombreLista ->
+                val nuevaLista = ListaReproduccion()
+                nuevaLista.Listanombre = nombreLista
+                nuevaLista.Canciones =arrayListOf("SinCancion")
+                listasreprocontroller.subirListaReproduccion(nuevaLista, uid,nuevaLista.id)
+                showDialog = false
+                actualizarlista = true
+            }
+        )
     }
 }
 
 @Composable
-fun ListaReproduccionCards(listas: List<ListaReproduccion>,modifier: Modifier) {
-    LazyColumn(modifier = modifier
-        .fillMaxSize()) {
+fun ListaReproduccionCards(
+    listas: List<ListaReproduccion>,
+    modifier: Modifier,
+    navController:NavController,
+    onDelete: (String) -> Unit
+) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
         items(listas) { lista ->
-            ListaReproduccionItem(nombreLista = lista.Listanombre)
+            ListaReproduccionItem(nombreLista = lista.Listanombre, listaId = lista.id,navController, onDelete = onDelete)
         }
     }
 }
 @Composable
-fun ListaReproduccionItem(nombreLista: String) {
+fun ListaReproduccionItem(
+    nombreLista: String,
+    listaId: String,
+    navController: NavController,
+    onDelete: (String) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .width(350.dp)
@@ -135,7 +145,12 @@ fun ListaReproduccionItem(nombreLista: String) {
             .padding(start = 12.dp, end = 60.dp)
             .padding(vertical = 6.dp)
             .background(Color.Transparent)
-            .clickable { /* por hacer */ },
+            .clickable {
+                navController.navigate(
+                    route = Rutas.Lista.createRoute(
+                        listaId
+                    )
+                ) },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(Color.White)
     ) {
@@ -150,9 +165,36 @@ fun ListaReproduccionItem(nombreLista: String) {
                 color = Color.Black,
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .fillMaxWidth()
+                    .weight(1f)
             )
+            IconButton(onClick = { showDialog = true }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_delete_24),
+                    contentDescription = "Eliminar",
+                    tint = Color.Red
+                )
+            }
         }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "¿Estás seguro que deseas borrar la lista?") },
+            confirmButton = {
+                Button(onClick = {
+                    onDelete(listaId)
+                    showDialog = false
+                }) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
     }
 }
 
@@ -184,4 +226,38 @@ private fun BotonNuevaLista(onClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+private fun CrearListaDialog(onDismiss: () -> Unit, onCreate: (String) -> Unit) {
+    var nombreLista by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Nueva Lista de Reproducción") },
+        text = {
+            Column {
+                Text(text = "Ingrese el nombre de la nueva lista:")
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = nombreLista,
+                    onValueChange = { nombreLista = it },
+                    placeholder = { Text(text = "Nombre de la lista") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onCreate(nombreLista) },
+                enabled = nombreLista.isNotBlank()
+            ) {
+                Text("Crear")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text("Cancelar")
+            }
+        }
+    )
 }

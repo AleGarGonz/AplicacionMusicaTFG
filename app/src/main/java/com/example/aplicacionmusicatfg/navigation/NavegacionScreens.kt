@@ -9,11 +9,13 @@ import androidx.navigation.navArgument
 import com.example.aplicacionmusicatfg.LoginScreen
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
+import com.example.aplicacionmusicatfg.view.AnadirCancionesScreen
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.example.aplicacionmusicatfg.view.EditarPerfilScreen
 import com.example.aplicacionmusicatfg.view.GenerosScreen
 import com.example.aplicacionmusicatfg.view.ListaReproScreen
+import com.example.aplicacionmusicatfg.view.ListaScreen
 import com.example.aplicacionmusicatfg.view.PerfilUsuarioScreen
 import com.example.aplicacionmusicatfg.view.RecuperarContraScreen
 import com.example.aplicacionmusicatfg.view.RegistroScreen
@@ -80,6 +82,26 @@ fun NaveegacionScreens(){
         }
         composable(route= Rutas.ListaRepro.route){
             ListaReproScreen(navController,logincontrol)
+        }
+        composable(
+            route= Rutas.Lista.route,
+            arguments = listOf(navArgument("ListaID") { type = NavType.StringType })
+        ){backStackEntry ->
+            ListaScreen(
+                navController= navController,
+                loginController=logincontrol,
+                ListaID = backStackEntry.arguments?.getString("ListaID") ?: ""
+            )
+        }
+        composable(
+            route= Rutas.AnadirCanciones.route,
+            arguments = listOf(navArgument("ListaID") { type = NavType.StringType })
+        ){backStackEntry ->
+            AnadirCancionesScreen(
+                navController= navController,
+                loginController=logincontrol,
+                ListaID = backStackEntry.arguments?.getString("ListaID") ?: ""
+            )
         }
     }
 }

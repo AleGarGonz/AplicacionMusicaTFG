@@ -17,4 +17,14 @@ sealed class Rutas(val route:String){
 
     object EditarPerfil : Rutas("editarperfil_screen")
     object ListaRepro : Rutas("listarepro_screen")
+    object Lista : Rutas("lista_screen/{ListaID}") {
+        fun createRoute(ListaID: String): String {
+            return "lista_screen/$ListaID"
+        }
+    }
+    object AnadirCanciones : Rutas("anadircanciones_screen/{ListaID}"){
+        fun createRoute(ListaID: String): String {
+            return "anadircanciones_screen/$ListaID"
+        }
+    }
 }
