@@ -1,5 +1,6 @@
 package com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,8 +48,9 @@ import com.example.aplicacionmusicatfg.controladores.ListaReproController
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import com.example.aplicacionmusicatfg.navigation.Rutas
+import kotlinx.coroutines.delay
 
-val listasreprocontroller = ListaReproController() //Igual estaria bien ponerlo fuera no lo se...
+val listasreprocontroller = ListaReproController() //Igual estaria bien ponerlo fuera no lo se... lo detectan todas las ventanas que se abren de esta no se porqie
 @Composable
 fun Body(
     modifier: Modifier,
@@ -58,6 +61,7 @@ fun Body(
     var listasReproduccionDescargadas by remember { mutableStateOf(emptyList<ListaReproduccion>()) }
     var showDialog by remember { mutableStateOf(false) }
     var actualizarlista  by remember { mutableStateOf(true) }
+    var context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,9 +95,17 @@ fun Body(
 
         // Descargar todas las listas de reproducción
         LaunchedEffect(actualizarlista) {
-            listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listas ->
-                listasReproduccionDescargadas = listas
-                actualizarlista = false
+            if(listasReproduccionDescargadas.isEmpty()){
+                listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listas ->
+                    listasReproduccionDescargadas = listas
+                    actualizarlista = false
+                }
+            }else{
+                delay(2000)
+                listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listas ->
+                    listasReproduccionDescargadas = listas
+                    actualizarlista = false
+                }
             }
         }
         ListaReproduccionCards(listas = listasReproduccionDescargadas, modifier,navController) { listaId ->
@@ -107,10 +119,10 @@ fun Body(
             onCreate = { nombreLista ->
                 val nuevaLista = ListaReproduccion()
                 nuevaLista.Listanombre = nombreLista
-                nuevaLista.Canciones =arrayListOf("SinCancion")
                 listasreprocontroller.subirListaReproduccion(nuevaLista, uid,nuevaLista.id)
                 showDialog = false
                 actualizarlista = true
+                Toast.makeText(context, "Lista creada!", Toast.LENGTH_SHORT).show()
             }
         )
     }

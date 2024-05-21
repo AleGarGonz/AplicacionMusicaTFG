@@ -27,8 +27,7 @@ class ListaReproController {
     fun actualizarListaReproduccion(listaReproduccion: ListaReproduccion, uid: String, idLista: String) {
         // Crear un mapa para almacenar los campos que se van a actualizar
         val actualizacionMap = mutableMapOf<String, Any?>()
-        actualizacionMap["Listanombre"] = listaReproduccion.Listanombre
-        actualizacionMap["Canciones"] = listaReproduccion.Canciones
+        actualizacionMap["canciones"] = listaReproduccion.Canciones
 
         // Referencia a la lista de reproducción a actualizar
         val listaRef = myRef.child(uid).child(idLista)

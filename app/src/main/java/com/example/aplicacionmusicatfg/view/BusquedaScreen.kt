@@ -145,6 +145,7 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
                 musicPlayerController.setListAndIndex(listCanciones, obtenerPosicionArchivo(listCanciones, cancion.audio))}
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            var isClicked = false
             Column(Modifier
                 .padding(start = 8.dp)
                 .width(300.dp)
@@ -154,6 +155,7 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
             }
             IconButton(
                 onClick = {
+                    isClicked =true
                     navController.navigate(
                         route = Rutas.CancionScreen.createRoute(
                             cancion.artista,
@@ -164,7 +166,8 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
                         )
                     )
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                enabled = !isClicked
             ) {
                 val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
                 Icon(painter = stopIcon, contentDescription = "MasInfo")

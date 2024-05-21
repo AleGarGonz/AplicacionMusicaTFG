@@ -127,7 +127,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 if(lazyColumnVisible){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(canciones) { cancion ->
-                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,navController)
+                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,navController,uid)
                         }
                     }
                 }
@@ -139,11 +139,12 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController, navController: NavController) {
+private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController, navController: NavController,uid:String) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+    var context = LocalContext.current
     val onAnteriorClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playPrevious() }}
     val onStopClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.stopAndReset() }}
     val onPlayClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playOrPause()} }
@@ -163,6 +164,7 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
             }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            var isClicked = false
             Column(
                 Modifier
                     .padding(start = 8.dp)
@@ -173,6 +175,7 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
             }
             IconButton(
                 onClick = {
+                    isClicked =true
                     navController.navigate(
                         route = Rutas.CancionScreen.createRoute(
                             cancion.artista,
@@ -183,7 +186,8 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
                         )
                     )
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                enabled = !isClicked
             ) {
                 val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
                 Icon(painter = stopIcon, contentDescription = "MasInfo")

@@ -1,5 +1,7 @@
 package com.example.aplicacionmusicatfg.componentes.AnadirCancionesComponentes
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes.listasreprocontroller
-import com.example.aplicacionmusicatfg.controladores.ListaReproController
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
 import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorArtista
@@ -40,17 +41,15 @@ import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import java.io.File
 
 private val musicPlayerController = MusicPlayerController()
-val listasreprocontroller = ListaReproController()
+var listaRepro = ListaReproduccion()
 @Composable
 fun Body(navController: NavController, loginController: LoginController, ListaID: String) {
     val uid = loginController.getCurrentUser()?.uid.toString()
-    var listaRepro by remember { mutableStateOf(ListaReproduccion()) }
 
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
     var listaDeArchivos: List<File> by remember { mutableStateOf(emptyList()) }
     var lazyColumnVisible by rememberSaveable { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         listasreprocontroller.descargarListaReproduccion(uid,ListaID) { lista ->
             listaRepro= lista!!
@@ -111,7 +110,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 if(lazyColumnVisible){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(canciones) { cancion ->
-                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid,listaRepro,ListaID)
+                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid)
                         }
                     }
                 }
@@ -120,14 +119,19 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
             }
         }
     }
+    BackHandler(onBack = {
+        listaRepro.Canciones = emptyList()
+        navController.popBackStack()
+    })
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String,listaRepro:ListaReproduccion,ListaID:String ) {
+private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+    var context = LocalContext.current
     val onAnteriorClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playPrevious() }}
     val onStopClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.stopAndReset() }}
     val onPlayClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playOrPause()} }
@@ -147,6 +151,7 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
             }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            var isAdded by remember { mutableStateOf(false) }
             Column(
                 Modifier
                     .padding(start = 8.dp)
@@ -158,9 +163,12 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
             IconButton(
                 onClick = {
                     listaRepro.Canciones += cancion.titulo
-                    listasreprocontroller.actualizarListaReproduccion(listaRepro,uid,ListaID)
+                    listasreprocontroller.actualizarListaReproduccion(listaRepro,uid, listaRepro.id)
+                    Toast.makeText(context, "Canción Añadida", Toast.LENGTH_SHORT).show()
+                    isAdded = true
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                enabled = !isAdded
             ) {
                 val stopIcon = painterResource(id = R.drawable.baseline_add_24)
                 Icon(painter = stopIcon, contentDescription = "MasInfo")

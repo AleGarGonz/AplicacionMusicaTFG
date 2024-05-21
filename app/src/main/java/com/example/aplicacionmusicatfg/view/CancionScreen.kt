@@ -90,10 +90,6 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             cancion = cancion,
             imagen = ImagenFile
         )
-        BackHandler(onBack = {//Detecta cuando vas para atras lo podria añadir en las pantallas principales
-            navController.popBackStack()
-            musicPlayerController.release()
-        })
     }else{
         CircularProgressIndicator(
             modifier = Modifier
@@ -103,6 +99,10 @@ fun CancionScreen(navController: NavController,param1: String, param2: String, p
             strokeWidth = 12.dp,
         )
     }
+    BackHandler(onBack = {//Detecta cuando vas para atras lo podria añadir en las pantallas principales
+        navController.popBackStack()
+        musicPlayerController.release()
+    })
 }
 
 
