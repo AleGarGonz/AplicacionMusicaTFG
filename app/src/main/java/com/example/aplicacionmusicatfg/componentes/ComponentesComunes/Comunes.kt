@@ -415,5 +415,9 @@ fun ImageLogo(modifier: Modifier) {
     )
 }
 fun isValidEmail(email: String): Boolean {
-    return PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
+    if(email.contains("@gmail")){
+        return PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
+    }else{
+        return false
+    }
 }
