@@ -6,17 +6,24 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,14 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.controladores.GeneroController
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
-import com.example.aplicacionmusicatfg.controladores.getListaGenerosRealtime
 import com.example.aplicacionmusicatfg.modelos.Genero
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import java.io.File
 import java.util.Random
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MiBody(modifier: Modifier,navController: NavController) {
         Column(
@@ -63,66 +69,26 @@ fun MiBody(modifier: Modifier,navController: NavController) {
                     )
                 )
         ) {
-            Button(
-                onClick = { navController.navigate(route = Rutas.BusquedaScreen.route) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(top = 70.dp)
-                    .height(60.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                )
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_search_24),
-                        contentDescription = "Buscar"
-                    )
-                    Text(
-                        text = "Canciones",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-            Text(
-                text = "Explorar géneros",
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .padding(horizontal = 12.dp),
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.SansSerif,
-                    color=Color.Black
-                )
-            )
-
+            buscarButton(navController)
+            explogentext(modifier
+                .padding(top = 12.dp)
+                .padding(horizontal = 12.dp))
             GeneroList(modifier = Modifier.fillMaxWidth(), navController)
         }
 }
 
 
 @Composable
-private fun GeneroList(modifier: Modifier = Modifier,navController: NavController) {
+private fun GeneroList(modifier: Modifier,navController: NavController) {
     var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
     var ImagenFile: File? = null;
     var cardVisible by rememberSaveable { mutableStateOf(false) }
+    val generoController = GeneroController()
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().padding(bottom = 40.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-            getListaGenerosRealtime { generos ->
+        generoController.getListaGenerosRealtime { generos ->
                 listaGeneros = generos
             }
             LazyColumn(
@@ -171,16 +137,12 @@ private fun GeneroList(modifier: Modifier = Modifier,navController: NavControlle
 @Composable
 private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: File?,navController: NavController) {
     val randomColor by remember { mutableStateOf(generateRandomColor()) }
-    fun isDark(color: Color): Boolean {
-        val luminance = 0.2126f * color.red + 0.7152f * color.green + 0.0722f * color.blue
-        return luminance < 0.5f
-    }
     val textColor = if (isDark(randomColor)) Color.White else Color.Black
     var showDialog by remember { mutableStateOf(false) }
     if (showDialog) {
         InformacionDialog(
             texto = genero.descripcion,
-            onDismissRequest = { showDialog = false } // Establece showDialog en false para cerrar el diálogo
+            onDismissRequest = { showDialog = false }
         )
     }
     Card(
@@ -192,7 +154,7 @@ private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: Fil
         colors = CardDefaults.cardColors(
             containerColor = randomColor,
         ),
-        border = BorderStroke(4.dp, Color.Black)
+        border = BorderStroke(4.dp, Color.Cyan)
     ) {
         Column(
             modifier.fillMaxSize()
@@ -222,10 +184,10 @@ private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: Fil
                 }
             }
             Row(modifier = Modifier.fillMaxWidth()) {
+                //Dependiendo de si la imagen se ha descargado o no mostrara la imagen o una por defecto
                 if (validarImagenGenero(imagen,genero)) {
                     // Lee el archivo en un Bitmap
                     val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
-
                     // Convierte el Bitmap en un ImageBitmap
                     val imageBitmap = bitmap.asImageBitmap()
                     Image(
@@ -282,6 +244,10 @@ private fun generateRandomColor(): Color {
         alpha = 1f
     )
 }
+private fun isDark(color: Color): Boolean {
+    val luminance = 0.2126f * color.red + 0.7152f * color.green + 0.0722f * color.blue
+    return luminance < 0.5f
+}
 
 private fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
     return ImagenFile != null &&
@@ -291,4 +257,53 @@ private fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
             genero.imagen != null &&
             genero.imagen.isNotBlank() &&
             genero.imagen.isNotEmpty()
+}
+
+@Composable
+private fun buscarButton(navController: NavController) {
+    Button(
+        onClick = { navController.navigate(route = Rutas.BusquedaScreen.route) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .padding(top = 70.dp)
+            .height(60.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_search_24),
+                contentDescription = "Buscar"
+            )
+            Text(
+                text = "Canciones",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = Color.Black
+                ),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+@Composable
+private fun explogentext(modifier: Modifier){
+    Text(
+        text = "Explorar géneros",
+        modifier = modifier,
+        style = TextStyle(
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.SansSerif,
+            color=Color.Black
+        )
+    )
 }

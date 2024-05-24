@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -42,6 +43,7 @@ fun MiHeader(
         val generoDestinationId = navController.graph.findNode(Rutas.GenerosScreen.route)?.id
         val perfilDestinationId = navController.graph.findNode(Rutas.PerfilUsuario.route)?.id
         val listareproDestinationId = navController.graph.findNode(Rutas.ListaRepro.route)?.id
+        //Muestra un texto diferente dependiendo a la pantalla que navegues de las 3
         if(currentDestinationId == generoDestinationId ) {
             Text(
                 modifier = Modifier.padding(5.dp).padding(start = 6.dp),
@@ -87,13 +89,12 @@ fun MiHeader(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_logout_24),
-                contentDescription = "Configuracion",
+                contentDescription = "Salir al LogIn",
                 modifier = Modifier.size(30.dp),
                 tint = Color.Black
             )
         }
     }
-
     CerrarSesionDialog(
         showDialog = showDialog,
         onDismissRequest = { onShowDialogChange(false) },
@@ -111,10 +112,11 @@ private fun CerrarSesionDialog(
 ) {
     if (showDialog) {
         AlertDialog(
+            containerColor = Color.Black,
             onDismissRequest = onDismissRequest,
-            title = { Text(text = "Cerrar Sesión") },
+            title = { Text(text = "Cerrar Sesión",color = Color.White) },
             text = {
-                Text("¿Estás seguro de que deseas cerrar sesión?")
+                Text("¿Estás seguro de que deseas cerrar sesión?",color = Color.Gray)
             },
             confirmButton = {
                 Button(
@@ -134,16 +136,18 @@ private fun CerrarSesionDialog(
                             }
                         }
                         onDismissRequest()
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
                 ) {
-                    Text("Aceptar")
+                    Text("Aceptar",color = Color.Black)
                 }
             },
             dismissButton = {
                 Button(
-                    onClick = onDismissRequest
+                    onClick = onDismissRequest,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text("Cancelar")
+                    Text("Cancelar",color = Color.White)
                 }
             }
         )

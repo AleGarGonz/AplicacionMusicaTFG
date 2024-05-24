@@ -2,24 +2,32 @@ package com.example.aplicacionmusicatfg.componentes.AnadirCancionesComponentes
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.Reproductor
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.obtenerPosicionArchivo
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.validarAudioLista
 import com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes.listasreprocontroller
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
@@ -42,6 +53,7 @@ import java.io.File
 
 private val musicPlayerController = MusicPlayerController()
 var listaRepro = ListaReproduccion()
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Body(navController: NavController, loginController: LoginController, ListaID: String) {
     val uid = loginController.getCurrentUser()?.uid.toString()
@@ -67,7 +79,16 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
             }
         }
     }
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .height(140.dp)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black),
+                )
+            )
+    )
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = listaRepro.Listanombre,
@@ -76,9 +97,10 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 .padding(top = 12.dp)
                 .padding(horizontal = 12.dp),
             style = TextStyle(
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                fontFamily = FontFamily.SansSerif,
+                color =Color.Black
             )
         )
         OutlinedTextField(
@@ -86,12 +108,30 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
             onValueChange = { searchText = it },
             label = { Text("Buscar canciones por título o artista") },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { /* No es necesario hacer nada aquí */ }),
+            keyboardActions = KeyboardActions(onDone = {}),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 5.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                cursorColor = Color.Gray,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                containerColor = Color(0xFFFAFAFA),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black
+            ),
         )
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(
+                color = Color.White,
+                thickness = 2.dp,
+                modifier = Modifier.width(360.dp).padding(start = 12.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             if (canciones.isNotEmpty()) {
                 getListaSinConexionCancionStorage(LocalContext.current,canciones = canciones) { archivosDescargados, exception ->
                     if (exception != null) {
@@ -110,12 +150,12 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 if(lazyColumnVisible){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(canciones) { cancion ->
-                            CancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid)
+                            AñadirCancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid)
                         }
                     }
                 }
             } else {
-                Text(text = "No se encontraron canciones", fontSize = 16.sp, modifier = Modifier.padding(16.dp))
+                Text(text = "No se encontraron canciones", fontSize = 16.sp, modifier = Modifier.padding(16.dp),color =Color.Black)
             }
         }
     }
@@ -126,7 +166,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String) {
+private fun AñadirCancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -136,29 +176,38 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
     val onStopClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.stopAndReset() }}
     val onPlayClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playOrPause()} }
     val onSiguienteClick: () -> Unit = { if(listCanciones.size >=1){musicPlayerController.playNext()} }
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 23.dp)
-            .padding(end = 23.dp)
-            .padding(vertical = 6.dp)
+            .padding(start=19.dp).padding(end = 26.dp).padding(vertical = 4.dp)
             .clickable {
                 isSheetOpen = true
                 musicPlayerController.setListAndIndex(
                     listCanciones,
                     obtenerPosicionArchivo(listCanciones, cancion.audio)
                 )
-            }
+            },
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(2.dp, Color.Cyan)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.background(Color.White)) {
             var isAdded by remember { mutableStateOf(false) }
             Column(
                 Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 8.dp).padding(top = 3.dp)
+                    .height(60.dp)
                     .width(300.dp)
             ) {
-                Text(text = "${cancion.titulo}", fontSize = 21.sp)
-                Text(text = "${cancion.artista}", fontSize = 17.sp)
+                Text(
+                    text = "${cancion.titulo}",
+                    fontSize = 21.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "${cancion.artista}",
+                    fontSize = 17.sp,
+                    color = Color.Black
+                )
             }
             IconButton(
                 onClick = {
@@ -171,12 +220,17 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
                 enabled = !isAdded
             ) {
                 val stopIcon = painterResource(id = R.drawable.baseline_add_24)
-                Icon(painter = stopIcon, contentDescription = "MasInfo")
+                Icon(
+                    painter = stopIcon,
+                    contentDescription = "Añadir",
+                    tint = if (!isAdded) Color.Black else Color.LightGray
+                )
             }
 
         }
         if(isSheetOpen){
             ModalBottomSheet(
+                containerColor= Color.Cyan,
                 sheetState = sheetState,
                 onDismissRequest = {
                     isSheetOpen = false
@@ -204,92 +258,6 @@ private fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerC
                 }
             }
         }
-    }
-}
-//Metodo para obtener la posicion del mp3 en la lista
-private fun obtenerPosicionArchivo(files: List<File>, nombreArchivo: String): Int {
-    for ((index, file) in files.withIndex()) {
-        if (file.absoluteFile.name.contains(nombreArchivo)) {
-            return index
-        }
-    }
-    return -1
-}
-@Composable
-private fun Reproductor(
-    onAnteriorClick: () -> Unit,
-    onStopClick: () -> Unit,
-    onPlayClick: () -> Unit,
-    onSiguienteClick: () -> Unit
-) {
-    var isPlaying by rememberSaveable { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .padding(horizontal = 16.dp)
-                .align(Alignment.BottomCenter),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = {
-                if (!isPlaying) {
-                    isPlaying = true
-                }
-                onAnteriorClick()
-            }, modifier = Modifier.weight(1f)) {
-                val anteriorIcon = painterResource(id = R.drawable.baseline_skip_previous_24)
-                Icon(painter = anteriorIcon, contentDescription = "Anterior")
-            }
-            IconButton(onClick = {
-                if (isPlaying) {
-                    isPlaying = false
-                    onPlayClick()
-                }
-                onStopClick()
-            }, modifier = Modifier.weight(1f)) {
-                val stopIcon = painterResource(id = R.drawable.baseline_stop_24)
-                Icon(painter = stopIcon, contentDescription = "Stop")
-            }
-            IconButton(
-                onClick = {
-                    isPlaying = !isPlaying
-                    onPlayClick()
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                val playIcon = if (isPlaying) {
-                    painterResource(id = R.drawable.baseline_pause_24)
-                } else {
-                    painterResource(id = R.drawable.baseline_play_arrow_24)
-                }
-                Icon(painter = playIcon, contentDescription = if (isPlaying) "Pause" else "Play")
-            }
-            IconButton(onClick = {
-                if (!isPlaying) {
-                    isPlaying = true
-                }
-                onSiguienteClick()
-            }, modifier = Modifier.weight(1f)) {
-                val siguienteIcon = painterResource(id = R.drawable.baseline_skip_next_24)
-                Icon(painter = siguienteIcon, contentDescription = "Siguiente")
-            }
-        }
-    }
-}
-
-private fun validarAudioLista(listaArchivos: List<File?>): Boolean {
-    return listaArchivos.all {
-        it != null &&
-                it.isFile &&
-                it.exists() &&
-                it.length() > 0L
     }
 }
 

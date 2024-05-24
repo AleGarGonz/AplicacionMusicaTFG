@@ -151,7 +151,7 @@ private fun Contenido(
             .height(140.dp)
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color.Blue.copy(alpha = 0.9f), Color.Black),//Tengo que ponerle un fondo chulo
+                    colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black)
                 )
             )
     )
@@ -168,12 +168,14 @@ private fun Contenido(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = cancion.titulo,
-                fontSize = 30.sp
+                fontSize = 35.sp,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = cancion.artista,
-                fontSize = 15.sp
+                fontSize = 19.sp,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(16.dp))
             if(validarImagen(imagen)){
@@ -228,7 +230,7 @@ private fun Contenido(
                     progress = 0f
                 }) {
                     val stopIcon = painterResource(id = R.drawable.baseline_stop_24)
-                    Icon(painter = stopIcon, contentDescription = "Stop")
+                    Icon(painter = stopIcon, contentDescription = "Stop", tint = Color.White)
                 }
                 IconButton(
                     onClick = {
@@ -243,7 +245,8 @@ private fun Contenido(
                     }
                     Icon(
                         painter = playIcon,
-                        contentDescription = if (isPlaying) "Pause" else "Play"
+                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        tint = Color.White
                     )
                 }
             }

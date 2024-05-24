@@ -1,9 +1,10 @@
 package com.example.aplicacionmusicatfg.controladores
 
+import androidx.lifecycle.ViewModel
 import com.example.aplicacionmusicatfg.modelos.MediaPlayerManager
 import java.io.File
 
-class MusicPlayerController {
+class MusicPlayerController: ViewModel() {
     private val mediaPlayerManager = MediaPlayerManager()
 
     fun playOrPause() {

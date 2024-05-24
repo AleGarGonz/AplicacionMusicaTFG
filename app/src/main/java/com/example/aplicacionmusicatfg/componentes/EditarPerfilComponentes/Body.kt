@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +55,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.biografiaText
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.generoFavText
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.nombreText
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
@@ -160,10 +164,12 @@ fun Body(
                 modifier = Modifier.padding(start = 14.dp)
             ) {
                 Spacer(modifier = Modifier.size(10.dp))
+                nombreText(modifier)
                 Nombre(nombre,usuario.nombre) {
                     nombre = it
                 }
                 Spacer(modifier = modifier.height(16.dp))
+                biografiaText(modifier)
                 if(usuario.biografia.isEmpty()){
                    Biografia(bio = biografia, bioActual ="Aún no sabemos nada sobre ti..." ){
                        biografia = it
@@ -174,6 +180,7 @@ fun Body(
                     }
                 }
                 Spacer(modifier = modifier.height(16.dp))
+                generoFavText(modifier)
                 if(usuario.generofav.isEmpty()) {
                     Genero(gen = genero, genActual = "¿Cual es tu genero favorito?"){
                         genero = it
@@ -280,7 +287,8 @@ private fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Conte
     ) {
         Icon(
             painter = painterResource(id = R.drawable.baseline_edit_24),
-            contentDescription = "Cambiar imagen"
+            contentDescription = "Cambiar imagen",
+            tint = Color.White
         )
     }
 }
@@ -359,10 +367,12 @@ private fun Nombre(nombre: String,nombreActual:String, onTextChanged: (String) -
         modifier = Modifier
             .fillMaxWidth()
             .padding(end = 30.dp),
-        placeholder = { Text(text = nombreActual,
+        placeholder = {
+            Text(text = nombreActual,
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                color = Color.Gray
             )
         ) },
         maxLines = 1,
@@ -391,10 +401,12 @@ private fun Biografia(bio: String,bioActual:String, onTextChanged: (String) -> U
         modifier = Modifier
             .fillMaxWidth()
             .padding(end = 30.dp),
-        placeholder = { Text(text = bioActual,
+        placeholder = {
+            Text(text = bioActual,
             style = TextStyle(
                 fontSize = 16.sp,
-                fontStyle = FontStyle.Italic
+                fontStyle = FontStyle.Italic,
+                color = Color.Gray,
             )
         ) },
         maxLines = 1,
@@ -461,8 +473,9 @@ private fun BotonActualizar(onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp).padding(end = 30.dp)
+            .padding(start = 4.dp).padding(end = 30.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
     ) {
-        Text(text = "Actualizar")
+        Text(text = "Actualizar",color=Color.Black)
     }
 }

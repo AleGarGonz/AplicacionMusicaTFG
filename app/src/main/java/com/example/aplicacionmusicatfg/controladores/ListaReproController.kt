@@ -1,5 +1,6 @@
 package com.example.aplicacionmusicatfg.controladores
 
+import androidx.lifecycle.ViewModel
 import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -7,7 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ListaReproController {
+class ListaReproController: ViewModel() {
     private val database = Firebase.database
     private val myRef = database.getReference("Listasrepro")
 

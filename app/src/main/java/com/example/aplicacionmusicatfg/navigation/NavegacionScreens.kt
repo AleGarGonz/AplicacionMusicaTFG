@@ -30,10 +30,9 @@ fun NaveegacionScreens(){
     val logincontrol = LoginController()
     val user :FirebaseUser? = logincontrol.getCurrentUser()
     val usuariocontroller = UsuarioController()
-
-    //Si la cuenta email no esta verificada en google no recordara la cuenta creo
-
-    NavHost(navController = navController, startDestination = if(user == null || !user.isEmailVerified)Rutas.Login.route else Rutas.GenerosScreen.route){//Lo de verified es si ha verificado su cuenta de google
+   //Compruebo que sea un email verificado
+    //montar un sistema de verificacion de email...
+    NavHost(navController = navController, startDestination = if(user == null || !user.isEmailVerified)Rutas.Login.route else Rutas.GenerosScreen.route){
         composable(route = Rutas.BusquedaScreen.route,
             arguments = listOf(navArgument("parametroOpcional") {
                 defaultValue = "Default"

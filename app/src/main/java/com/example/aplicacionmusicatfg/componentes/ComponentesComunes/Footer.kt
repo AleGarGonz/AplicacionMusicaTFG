@@ -21,7 +21,6 @@ import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.navigation.Rutas
 
-//La pantalla se deberia llamar genero y no categorias
 @Composable
 fun MiFooter(modifier: Modifier = Modifier,navController:NavController) {
     Box(

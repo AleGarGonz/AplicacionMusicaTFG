@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.biografiaText
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.emailText
+import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.generoFavText
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.controladores.getImagenStorage
@@ -108,7 +112,8 @@ fun Body(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top =95.dp).padding(start = 4.dp),
+                .padding(top = 95.dp)
+                .padding(start = 4.dp),
             horizontalAlignment = Alignment.Start,
         ) {
             if(validarImagenUsuario(ImagenFile,usuario)) {
@@ -147,27 +152,35 @@ fun Body(
                             text = usuario.nombre,
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                color = Color.White
                             ),
                             modifier = Modifier.weight(1f) // Hace que el texto ocupe el espacio disponible
                         )
                         Button(
                             onClick = {  navController.navigate(route = Rutas.EditarPerfil.route) },
-                            modifier = Modifier.padding(start = 16.dp).padding(end=10.dp) // Añade padding al botón
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .padding(end = 10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
                         ) {
-                            Text(text = "Editar Perfil")
+                            Text(text = "Editar Perfil", color = Color.Black)
                         }
                     }
+                    Spacer(modifier = modifier.height(12.dp))
+                    emailText(modifier)
                     Text(
                         text = usuario.email,
                         style = TextStyle(fontSize = 16.sp, fontStyle = FontStyle.Italic),
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        color = Color.White
                     )
-                    Spacer(modifier = modifier.height(16.dp))
+                    Spacer(modifier = modifier.height(12.dp))
+                    biografiaText(modifier)
                     if(usuario.biografia.isEmpty()){
                         Text(
                             text = "Aún no sabemos nada sobre ti...",
-                            modifier = Modifier.padding(bottom = 10.dp).padding(end = 40.dp),
+                            modifier = Modifier.padding(end = 40.dp),
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
                             color = Color.Gray,
@@ -176,18 +189,21 @@ fun Body(
                     }else {
                         Text(
                             text = usuario.biografia,
-                            modifier = Modifier.padding(bottom = 10.dp).padding(end = 40.dp),
+                            modifier = Modifier.padding(end = 40.dp),
                             maxLines = 3,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.White
                         )
                     }
+                    Spacer(modifier = modifier.height(12.dp))
+                    generoFavText(modifier)
                     if(usuario.generofav.isEmpty()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_music_note_24),
                                 contentDescription = null,
                                 tint = Color.LightGray,
-                                modifier = Modifier.size(16.dp) // Tamaño del icono
+                                modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = "¿Cual es tu genero favorito?",

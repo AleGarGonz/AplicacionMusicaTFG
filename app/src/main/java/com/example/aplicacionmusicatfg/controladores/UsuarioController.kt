@@ -27,22 +27,11 @@ class UsuarioController: ViewModel() {
     }
 
     fun descargarUsuario(emailBuscado: String, callback: (Usuario?) -> Unit) {
-        // Leer de la base de datos
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        myRef.orderByChild("email").equalTo(emailBuscado).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var usuarioEncontrado: Usuario? = null
-
-                for (usuarioSnapshot in snapshot.children) {
-                    val usuario = usuarioSnapshot.getValue(Usuario::class.java)
-                    if (usuario?.email == emailBuscado) {
-                        usuarioEncontrado = usuario
-                        break
-                    }
-                }
-
+                val usuarioEncontrado = snapshot.children.firstOrNull()?.getValue(Usuario::class.java)
                 callback(usuarioEncontrado)
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.w(ContentValues.TAG, "Error al leer el valor.", error.toException())
                 callback(null)
@@ -51,29 +40,21 @@ class UsuarioController: ViewModel() {
     }
 
     fun actualizarUsuario(usuario: Usuario, callback: (Boolean) -> Unit) {
-
-        // Consultar la referencia del usuario en la base de datos
         val usuarioQuery = myRef.orderByChild("email").equalTo(usuario.email)
-
         usuarioQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Verificar si se encontró el usuario
                 if (snapshot.exists()) {
-                    // Actualizar los datos del usuario
                     for (usuarioSnapshot in snapshot.children) {
                         usuarioSnapshot.ref.setValue(usuario)
                     }
-                    // Llamar al callback indicando éxito
                     callback(true)
                 } else {
-                    // No se encontró el usuario, llamar al callback indicando falla
                     callback(false)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.w(ContentValues.TAG, "Error al leer el valor.", error.toException())
-                // Llamar al callback indicando falla
                 callback(false)
             }
         })

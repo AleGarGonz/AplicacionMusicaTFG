@@ -10,13 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.aplicacionmusicatfg.componentes.GenerosScreenComponentes.MiBody
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiFooter
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiHeader
+import com.example.aplicacionmusicatfg.componentes.GenerosScreenComponentes.MiBody
 import com.example.aplicacionmusicatfg.controladores.LoginController
 
-
-//Pantalla con las categorias y el buscador
 @Composable
 fun GenerosScreen(navController: NavController,loginController: LoginController) {
     var showDialog by remember { mutableStateOf(false) }

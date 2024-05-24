@@ -16,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : ComponentActivity() {
     private val firebasePersistenceViewModel: FirebasePersistenceViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,13 +28,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AplicacionMusicaTFGTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NaveegacionScreens();
-                    //LoginScreen()
+                    NaveegacionScreens()
                 }
             }
         }

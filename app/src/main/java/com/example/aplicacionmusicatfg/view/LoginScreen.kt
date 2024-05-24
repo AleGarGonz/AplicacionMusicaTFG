@@ -18,7 +18,6 @@ fun LoginScreen(navController: NavController,loginController: LoginController) {
             .fillMaxSize()
             .padding(0.dp)) {
 
-        //Header(Modifier.align(Alignment.TopEnd))
         Body(Modifier.align(Alignment.Center), loginController,navController)
         Footer(Modifier.align(Alignment.BottomCenter),navController = navController)
 

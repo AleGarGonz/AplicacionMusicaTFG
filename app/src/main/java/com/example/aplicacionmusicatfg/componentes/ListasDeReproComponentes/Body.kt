@@ -234,7 +234,8 @@ private fun BotonNuevaLista(onClick: () -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_add_24),
                 contentDescription = "Añadir",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
             )
         }
     }
@@ -245,11 +246,12 @@ private fun CrearListaDialog(onDismiss: () -> Unit, onCreate: (String) -> Unit) 
     var nombreLista by remember { mutableStateOf("") }
 
     AlertDialog(
+        containerColor = Color.Black,
         onDismissRequest = { onDismiss() },
-        title = { Text(text = "Nueva Lista de Reproducción") },
+        title = { Text(text = "Nueva Lista de Reproducción", color = Color.White) },
         text = {
             Column {
-                Text(text = "Ingrese el nombre de la nueva lista:")
+                Text(text = "Ingrese el nombre de la nueva lista:",color = Color.Gray)
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = nombreLista,
@@ -261,14 +263,16 @@ private fun CrearListaDialog(onDismiss: () -> Unit, onCreate: (String) -> Unit) 
         confirmButton = {
             Button(
                 onClick = { onCreate(nombreLista) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
                 enabled = nombreLista.isNotBlank()
             ) {
-                Text("Crear")
+                Text("Crear",color = Color.Black)
             }
         },
         dismissButton = {
-            Button(onClick = { onDismiss() }) {
-                Text("Cancelar")
+            Button(onClick = { onDismiss() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
+                Text("Cancelar",color = Color.White)
             }
         }
     )
