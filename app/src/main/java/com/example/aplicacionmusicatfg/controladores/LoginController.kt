@@ -106,4 +106,23 @@ class LoginController: ViewModel() {
     fun signOut() {
         auth.signOut()
     }
+    fun verificarEmailUsuario(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val currentUser = auth.currentUser
+
+        currentUser?.let { user ->
+            user.sendEmailVerification()
+                .addOnSuccessListener {
+                    onSuccess()
+                }
+                .addOnFailureListener { exception ->
+                    val errorMessage = when (exception) {
+                        is FirebaseNetworkException -> "No hay conexión de red"
+                        else -> "Ha ocurrido un error al enviar el correo de verificación"
+                    }
+                    onError(errorMessage)
+                }
+        } ?: run {
+            onError("No hay usuario actualmente logueado")
+        }
+    }
 }

@@ -90,7 +90,7 @@ private fun GeneroList(modifier: Modifier,navController: NavController) {
     ) {
         generoController.getListaGenerosRealtime { generos ->
                 listaGeneros = generos
-            }
+        }
             LazyColumn(
                 modifier = modifier.padding(vertical = 8.dp)
             ) {
@@ -216,21 +216,24 @@ private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: Fil
 @Composable
 private fun InformacionDialog(texto: String, onDismissRequest: () -> Unit) {
     AlertDialog(
+        containerColor = Color.Black,
         onDismissRequest = onDismissRequest,
         title = {
             Text(
                 text = "Información",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         },
         text = {
-            Text(texto,fontSize = 16.sp )
+            Text(texto,fontSize = 16.sp,color = Color.Gray)
         },
         confirmButton = {
             Button(
-                onClick = onDismissRequest
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
             ) {
-                Text("OK")
+                Text("OK",color = Color.Black)
             }
         }
     )

@@ -30,8 +30,7 @@ fun NaveegacionScreens(){
     val logincontrol = LoginController()
     val user :FirebaseUser? = logincontrol.getCurrentUser()
     val usuariocontroller = UsuarioController()
-   //Compruebo que sea un email verificado
-    //montar un sistema de verificacion de email...
+
     NavHost(navController = navController, startDestination = if(user == null || !user.isEmailVerified)Rutas.Login.route else Rutas.GenerosScreen.route){
         composable(route = Rutas.BusquedaScreen.route,
             arguments = listOf(navArgument("parametroOpcional") {

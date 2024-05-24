@@ -2,6 +2,7 @@ package com.example.aplicacionmusicatfg.componentes.PerfilUsuarioScreenComponent
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -67,6 +68,8 @@ fun Body(
     var ImagenFile: File? = null;
 
     var imagenPerfilVisible by rememberSaveable { mutableStateOf(false) }
+
+    val context =LocalContext.current
 
     // Descargar y asignar el usuario al estado cuando esté disponible
     LaunchedEffect(key1 = emailBuscado) {
@@ -155,7 +158,7 @@ fun Body(
                                 fontSize = 20.sp,
                                 color = Color.White
                             ),
-                            modifier = Modifier.weight(1f) // Hace que el texto ocupe el espacio disponible
+                            modifier = Modifier.weight(1f)
                         )
                         Button(
                             onClick = {  navController.navigate(route = Rutas.EditarPerfil.route) },
@@ -169,12 +172,45 @@ fun Body(
                     }
                     Spacer(modifier = modifier.height(12.dp))
                     emailText(modifier)
-                    Text(
-                        text = usuario.email,
-                        style = TextStyle(fontSize = 16.sp, fontStyle = FontStyle.Italic),
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        color = Color.White
-                    )
+                    if(logincontrol.getCurrentUser()!!.isEmailVerified){
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = usuario.email,
+                                style = TextStyle(fontSize = 16.sp, fontStyle = FontStyle.Italic),
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                color = Color.White
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_check_24),
+                                contentDescription = "Verificado",
+                                tint = Color.Green,
+                                modifier = Modifier.size(24.dp).padding(bottom = 6.dp) // Tamaño del icono
+                            )
+                        }
+                    }else{
+                        Button(
+                            onClick = {
+                                logincontrol.verificarEmailUsuario(
+                                    onSuccess = {
+                                        Toast.makeText(context, "Se ha enviado un email de verificación!", Toast.LENGTH_SHORT).show()
+                                    },
+                                    onError = { errorMessage ->
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Text(
+                                text = "Verifica tu email",
+                                style = TextStyle(fontSize = 16.sp, fontStyle = FontStyle.Italic),
+                                color = Color.Black
+                            )
+                        }
+                    }
                     Spacer(modifier = modifier.height(12.dp))
                     biografiaText(modifier)
                     if(usuario.biografia.isEmpty()){
@@ -202,7 +238,7 @@ fun Body(
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_music_note_24),
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Cyan,
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
@@ -216,7 +252,7 @@ fun Body(
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_music_note_24),
                                 contentDescription = null,
-                                tint = Color.LightGray,
+                                tint = Color.Cyan,
                                 modifier = Modifier.size(16.dp) 
                             )
                             Text(

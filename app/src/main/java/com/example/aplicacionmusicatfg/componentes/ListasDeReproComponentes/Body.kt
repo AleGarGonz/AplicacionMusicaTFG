@@ -191,19 +191,22 @@ fun ListaReproduccionItem(
 
     if (showDialog) {
         AlertDialog(
+            containerColor = Color.Black,
             onDismissRequest = { showDialog = false },
-            title = { Text(text = "¿Estás seguro que deseas borrar la lista?") },
+            title = { Text(text = "¿Estás seguro que deseas borrar la lista?", fontSize = 20.sp) },
             confirmButton = {
                 Button(onClick = {
                     onDelete(listaId)
                     showDialog = false
-                }) {
-                    Text("Sí")
+                },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
+                    Text("Sí",color = Color.Black)
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("No")
+                Button(onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
+                    Text("No",color = Color.White)
                 }
             }
         )

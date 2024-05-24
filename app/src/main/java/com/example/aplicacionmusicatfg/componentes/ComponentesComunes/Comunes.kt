@@ -18,12 +18,15 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -304,6 +307,9 @@ fun PasswordText(modifier: Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Email(email: String, onTextChanged: (String) -> Unit) {
+    var showInfo by rememberSaveable {
+        mutableStateOf(false)
+    }
     TextField(
         value = email,
         onValueChange = { onTextChanged(it) },
@@ -321,8 +327,34 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
             containerColor = Color(0xFFFAFAFA),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-        )
+        ),
+        trailingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_info_24),
+                contentDescription = "View",
+                modifier = Modifier.clickable { showInfo = !showInfo }
+            )
+        }
     )
+    if (showInfo) {
+        AlertDialog(
+            containerColor = Color.Black,
+            onDismissRequest = { showInfo = false },
+            title = { Text(text = "Información",color = Color.White)},
+            confirmButton = {
+                TextButton(onClick = { showInfo = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
+                    Text(text = "OK",color = Color.Black)
+                }
+            },
+            text = {
+                Text(
+                    text = "Solo los emails verificados mantendran la sesión iniciada en el dispositivo.",
+                    color = Color.Gray
+                )
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
