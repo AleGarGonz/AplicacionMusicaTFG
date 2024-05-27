@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     NaveegacionScreens()
-                    CircularProgressIndicatorWithTimeout()
+                    MiSplashScreen()
                 }
             }
         }
@@ -64,7 +64,7 @@ class FirebasePersistenceViewModel : ViewModel() {
     var isPersistenceEnabled: Boolean = false
 }
 @Composable
-fun CircularProgressIndicatorWithTimeout() {
+fun MiSplashScreen() {
     var isVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(2000)
