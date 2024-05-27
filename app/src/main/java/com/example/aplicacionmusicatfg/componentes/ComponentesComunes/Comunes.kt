@@ -79,7 +79,6 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
         border = BorderStroke(2.dp, Color.Cyan)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.background(Color.White)) {
-            var isClicked = false
             Column(
                 Modifier
                 .padding(start = 8.dp).padding(top = 3.dp)
@@ -99,7 +98,6 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
             }
             IconButton(
                 onClick = {
-                    isClicked =true
                     navController.navigate(
                         route = Rutas.CancionScreen.createRoute(
                             cancion.artista,
@@ -111,10 +109,10 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                     )
                 },
                 modifier = Modifier.weight(1f),
-                enabled = !isClicked
+                enabled = listCanciones.size >=1
             ) {
                 val stopIcon = painterResource(id = R.drawable.baseline_open_in_new_24)
-                Icon(painter = stopIcon, contentDescription = "MasInfo",tint = Color.Black)
+                Icon(painter = stopIcon, contentDescription = "MasInfo",tint = if (listCanciones.size >=1) Color.Black else Color.Gray)
             }
 
         }
@@ -141,7 +139,8 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                         modifier = Modifier
                             .padding(start = 15.dp)
                             .fillMaxWidth()
-                            .wrapContentSize(Alignment.Center)
+                            .wrapContentSize(Alignment.Center),
+                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.size(20.dp))
 

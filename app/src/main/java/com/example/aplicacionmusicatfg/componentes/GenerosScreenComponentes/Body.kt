@@ -29,11 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,77 +59,87 @@ import java.util.Random
 
 @Composable
 fun MiBody(modifier: Modifier,navController: NavController) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black),
-                    )
+    val generoController = GeneroController()
+    var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
+    var archivosImagenes = remember { mutableStateListOf<File>() }
+    //Descargo la lista de generos
+    if(listaGeneros.isEmpty()){
+        generoController.getListaGenerosRealtime { generos ->
+            listaGeneros = generos
+        }
+    }
+    //Descargo sus respectivas imagenes
+    if(archivosImagenes.isEmpty()){
+        for (genre in listaGeneros) {
+            getImagenStorage(
+                LocalContext.current,
+                genre.imagen
+            ) { archivo, excepcion ->
+                if (excepcion != null) {
+                    println("Error al descargar archivos: ${excepcion.message}")
+                } else {
+                    val nombreImagen = genre.imagen?.substringBeforeLast(".")
+                    if (archivo?.absoluteFile!!.name.contains(nombreImagen.toString())) {
+                        archivosImagenes.add(archivo)
+                    }
+                }
+            }
+        }
+    }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black),
                 )
-        ) {
-            buscarButton(navController)
-            explogentext(modifier
+            )
+    ) {
+        buscarButton(navController)
+        explogentext(
+            modifier
                 .padding(top = 12.dp)
                 .padding(horizontal = 12.dp))
-            GeneroList(modifier = Modifier.fillMaxWidth(), navController)
-        }
+        GeneroList(modifier = Modifier.fillMaxWidth(), navController,listaGeneros,archivosImagenes)
+    }
 }
 
 
 @Composable
-private fun GeneroList(modifier: Modifier,navController: NavController) {
-    var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
-    var ImagenFile: File? = null;
-    var cardVisible by rememberSaveable { mutableStateOf(false) }
-    val generoController = GeneroController()
+private fun GeneroList(modifier: Modifier,navController: NavController,listaGeneros: List<Genero>,archivosImagenes:List<File>) {
+    var ImagenFile: File? = null
     Box(
-        modifier = modifier.fillMaxSize().padding(bottom = 40.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = 40.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-        generoController.getListaGenerosRealtime { generos ->
-                listaGeneros = generos
-        }
-            LazyColumn(
-                modifier = modifier.padding(vertical = 8.dp)
-            ) {
-                items(listaGeneros.chunked(2)) { rowItems ->
-                    Row(
-                        Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        for (genre in rowItems) {
-                            getImagenStorage(
-                                LocalContext.current,
-                                genre.imagen
-                            ) { archivo, excepcion ->
-                                if (excepcion != null) {
-                                    println("Error al descargar archivos: ${excepcion.message}")
-                                } else {
-                                    val nombreImagen = genre.imagen?.substringBeforeLast(".")
-                                    if (archivo?.absoluteFile!!.name.contains(nombreImagen.toString())) {
-                                        ImagenFile = archivo
-                                    }
-                                }
-                            }
-                            if(!cardVisible){
-                                LaunchedEffect(validarImagenGenero(ImagenFile,genre)){
-                                    cardVisible = true
-                                }
-                            }
-                            if(cardVisible){
-                                GeneroCard(
-                                    genero = genre,
-                                    modifier = Modifier.weight(1f),
-                                    ImagenFile,
-                                    navController
-                                )
+        LazyColumn(
+            modifier = modifier.padding(vertical = 8.dp)
+        ) {
+            items(listaGeneros.chunked(2)) { rowItems ->
+                Row(
+                    Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    for (genre in rowItems) {
+                        val nombreImagen = genre.imagen?.substringBeforeLast(".")
+                        for(img in archivosImagenes){
+                            if (img?.absoluteFile!!.name.contains(nombreImagen.toString())) {
+                                ImagenFile = img
                             }
                         }
+                        GeneroCard(
+                            genero = genre,
+                            modifier = Modifier.weight(1f),
+                            ImagenFile,
+                            navController
+                        )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
+        }
     }
 }
 
@@ -185,7 +194,7 @@ private fun GeneroCard(genero:Genero, modifier: Modifier = Modifier, imagen: Fil
             }
             Row(modifier = Modifier.fillMaxWidth()) {
                 //Dependiendo de si la imagen se ha descargado o no mostrara la imagen o una por defecto
-                if (validarImagenGenero(imagen,genero)) {
+                if (validarImagenGenero(imagen)) {
                     // Lee el archivo en un Bitmap
                     val bitmap: Bitmap = BitmapFactory.decodeFile(imagen?.absolutePath)
                     // Convierte el Bitmap en un ImageBitmap
@@ -252,14 +261,11 @@ private fun isDark(color: Color): Boolean {
     return luminance < 0.5f
 }
 
-private fun validarImagenGenero(ImagenFile: File?, genero: Genero): Boolean {
+private fun validarImagenGenero(ImagenFile: File?): Boolean {
     return ImagenFile != null &&
             ImagenFile.isFile &&
             ImagenFile.exists() &&
-            ImagenFile.length() > 0L &&
-            genero.imagen != null &&
-            genero.imagen.isNotBlank() &&
-            genero.imagen.isNotEmpty()
+            ImagenFile.length() > 0L
 }
 
 @Composable
