@@ -32,4 +32,5 @@ fun GenerosScreen(navController: NavController,loginController: LoginController)
         )
         MiFooter(Modifier.align(Alignment.BottomCenter),navController)
     }
+    //pfakfp
 }
