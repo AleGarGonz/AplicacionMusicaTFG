@@ -51,14 +51,13 @@ private val musicPlayerController = MusicPlayerController()
 fun Body(navController: NavController, loginController: LoginController, ListaID: String) {
     val uid = loginController.getCurrentUser()?.uid.toString()
     var listaRepro by remember { mutableStateOf(ListaReproduccion()) }
-
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
     var listaDeArchivos: List<File> by remember { mutableStateOf(emptyList()) }
     var lazyColumnVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        listasreprocontroller.descargarListaReproduccion(uid,ListaID) { lista ->
+        listasreprocontroller.descargarListaReproduccion(ListaID) { lista ->
             listaRepro= lista!!
         }
     }
@@ -123,12 +122,21 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
         )
         Column(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier.height(12.dp))
-            BotonAñadirCanciones(){
-                navController.navigate(
-                    route = Rutas.AnadirCanciones.createRoute(
-                        ListaID
+            var esMia by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                listasreprocontroller.comprobarExistenciaListaReproduccion(uid, ListaID) { existe ->
+                    esMia = existe
+                }
+            }
+            if (esMia) {
+                BotonAñadirCanciones {
+                    navController.navigate(
+                        route = Rutas.AnadirCanciones.createRoute(
+                            ListaID
+                        )
                     )
-                )
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Divider(

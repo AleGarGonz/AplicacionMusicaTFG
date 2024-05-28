@@ -27,4 +27,5 @@ sealed class Rutas(val route:String){
             return "anadircanciones_screen/$ListaID"
         }
     }
+    object AnadirLista : Rutas("anadirlista_screen")
 }

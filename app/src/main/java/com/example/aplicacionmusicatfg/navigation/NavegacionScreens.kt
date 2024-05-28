@@ -10,6 +10,7 @@ import com.example.aplicacionmusicatfg.LoginScreen
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
 import com.example.aplicacionmusicatfg.view.AnadirCancionesScreen
+import com.example.aplicacionmusicatfg.view.AnadirListaScreen
 import com.example.aplicacionmusicatfg.view.BusquedaScreen
 import com.example.aplicacionmusicatfg.view.CancionScreen
 import com.example.aplicacionmusicatfg.view.EditarPerfilScreen
@@ -100,6 +101,9 @@ fun NaveegacionScreens(){
                 loginController=logincontrol,
                 ListaID = backStackEntry.arguments?.getString("ListaID") ?: ""
             )
+        }
+        composable(route=Rutas.AnadirLista.route){
+            AnadirListaScreen(navController = navController, loginController = logincontrol)
         }
     }
 }

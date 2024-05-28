@@ -84,6 +84,10 @@ fun Body(
             BotonNuevaLista(onClick = {
                 showDialog = true
             })
+            BotonAnadirLista(onClick = {
+                navController.navigate(
+                    route = Rutas.AnadirLista.route)
+            })
         }
         Spacer(modifier = Modifier.height(16.dp))
         Divider(
@@ -154,7 +158,7 @@ fun ListaReproduccionItem(
         modifier = Modifier
             .width(350.dp)
             .height(70.dp)
-            .padding(start = 12.dp, end = 60.dp)
+            .padding(start = 12.dp, end = 6.dp)
             .padding(vertical = 6.dp)
             .background(Color.Transparent)
             .clickable {
@@ -226,6 +230,36 @@ private fun BotonNuevaLista(onClick: () -> Unit) {
         ) {
             Text(
                 text = "Nueva Lista",
+                style = TextStyle(
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp
+                ),
+                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_add_24),
+                contentDescription = "Añadir",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
+            )
+        }
+    }
+}
+@Composable
+private fun BotonAnadirLista(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(Color.Cyan),
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(start = 8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Añadir Lista",
                 style = TextStyle(
                     color = Color.Black,
                     fontWeight = FontWeight.Medium,

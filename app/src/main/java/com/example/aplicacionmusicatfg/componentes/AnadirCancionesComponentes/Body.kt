@@ -57,13 +57,12 @@ var listaRepro = ListaReproduccion()
 @Composable
 fun Body(navController: NavController, loginController: LoginController, ListaID: String) {
     val uid = loginController.getCurrentUser()?.uid.toString()
-
     var searchText by remember { mutableStateOf("") }
     var canciones by remember { mutableStateOf(emptyList<Cancion>()) }
     var listaDeArchivos: List<File> by remember { mutableStateOf(emptyList()) }
     var lazyColumnVisible by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        listasreprocontroller.descargarListaReproduccion(uid,ListaID) { lista ->
+        listasreprocontroller.descargarListaReproduccion(ListaID) { lista ->
             listaRepro= lista!!
         }
     }

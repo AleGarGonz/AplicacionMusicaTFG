@@ -36,19 +36,45 @@ class ListaReproController: ViewModel() {
                 println("Error al actualizar la lista de reproducción en Firebase: $exception")
             }
     }
+    fun descargarListaReproduccion(listaId: String, callback: (ListaReproduccion?) -> Unit) {
+        val usersRef = myRef
 
-    fun descargarListaReproduccion(uid: String, listaId: String, callback: (ListaReproduccion?) -> Unit) {
-        val listaRef = myRef.child(uid).child(listaId)
-
-        listaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val lista = snapshot.getValue(ListaReproduccion::class.java)
-                callback(lista)
+                for (userSnapshot in snapshot.children) {
+                    val listaRef = userSnapshot.child(listaId)
+                    if (listaRef.exists()) {
+                        val lista = listaRef.getValue(ListaReproduccion::class.java)
+                        callback(lista)
+                        return
+                    }
+                }
+
+                callback(null)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 callback(null)
                 println("Error al descargar la lista de reproducción: $error")
+            }
+        })
+    }
+    fun comprobarExistenciaListaReproduccion(uid: String, listaId: String, callback: (Boolean) -> Unit) {
+        val userRef = myRef.child(uid)
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var existe = false
+                for (listaSnapshot in snapshot.children) {
+                    if (listaSnapshot.key == listaId) {
+                        existe = true
+                        break
+                    }
+                }
+                callback(existe)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                callback(false)
+                println("Error al comprobar la existencia de la lista de reproducción: $error")
             }
         })
     }
@@ -63,6 +89,28 @@ class ListaReproController: ViewModel() {
                 for (listaSnapshot in snapshot.children) {
                     val lista = listaSnapshot.getValue(ListaReproduccion::class.java)
                     lista?.let { listas.add(it) }
+                }
+                callback(listas)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(emptyList())
+                println("Error al descargar las listas de reproducción: $error")
+            }
+        })
+    }
+    fun descargarTodasLasListasReproduccionDeTodosLosUsuarios(callback: (List<ListaReproduccion>) -> Unit) {
+        val listas: MutableList<ListaReproduccion> = mutableListOf()
+
+        val listaRef = myRef
+
+        listaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (userSnapshot in snapshot.children) {
+                    for (listaSnapshot in userSnapshot.children) {
+                        val lista = listaSnapshot.getValue(ListaReproduccion::class.java)
+                        lista?.let { listas.add(it) }
+                    }
                 }
                 callback(listas)
             }
