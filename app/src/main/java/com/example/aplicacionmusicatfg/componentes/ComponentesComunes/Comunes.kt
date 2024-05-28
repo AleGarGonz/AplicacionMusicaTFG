@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -73,8 +74,7 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
             .fillMaxWidth()
             .padding(start=19.dp).padding(end = 26.dp).padding(vertical = 4.dp)
             .clickable {
-                isSheetOpen = true
-                musicPlayerController.setListAndIndex(listCanciones, obtenerPosicionArchivo(listCanciones, cancion.audio))},
+                isSheetOpen = true },
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(2.dp, Color.Cyan)
     ) {
@@ -125,6 +125,7 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                     musicPlayerController.release()
 
                 }) {
+                musicPlayerController.setListAndIndex(listCanciones, obtenerPosicionArchivo(listCanciones, cancion.audio))
                 if(listCanciones.size >=1){
                     Reproductor(
                         onAnteriorClick = onAnteriorClick,
@@ -133,17 +134,29 @@ fun CancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerControlle
                         onSiguienteClick = onSiguienteClick
                     )
                 }else{
-                    Spacer(modifier = Modifier.size(10.dp))
-                    Text(
-                        text = "No se puede reproducir la canción en estos momentos",
+                    Box(
                         modifier = Modifier
-                            .padding(start = 15.dp)
+                            .padding(vertical = 10.dp).padding(bottom = 20.dp)
                             .fillMaxWidth()
-                            .wrapContentSize(Alignment.Center),
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.size(20.dp))
-
+                            .wrapContentSize(Alignment.Center)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "La canción no está lista para reproducirse.",
+                                color = Color.Black,
+                                fontStyle = FontStyle.Italic,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.Blue,
+                                strokeWidth = 2.dp
+                            )
+                        }
+                    }
                 }
             }
         }
