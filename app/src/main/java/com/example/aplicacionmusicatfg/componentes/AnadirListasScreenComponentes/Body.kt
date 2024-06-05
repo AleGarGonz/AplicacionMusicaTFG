@@ -176,7 +176,7 @@ fun ListaReproduccionItem(
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_add_24),
                     contentDescription = "AnadirLista",
-                    tint = if (!isAdded) Color.Green else Color.LightGray
+                    tint = if (!isAdded) Color.Black else Color.LightGray
                 )
             }
         }
