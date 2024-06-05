@@ -1,9 +1,9 @@
 package com.example.aplicacionmusicatfg
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,23 +27,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.ImageLogo
 import com.example.aplicacionmusicatfg.navigation.NaveegacionScreens
 import com.example.aplicacionmusicatfg.ui.theme.AplicacionMusicaTFGTheme
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
+
+
 class MainActivity : ComponentActivity() {
+    private val firebasePersistenceViewModel: FirebasePersistenceViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Inicializa Firebase y habilita la persistencia de datos si aún no se ha hecho
-        val preferences = getPreferences(Context.MODE_PRIVATE)
-        val isPersistenceEnabled = preferences.getBoolean("isPersistenceEnabled", false)
-        if (!isPersistenceEnabled) {
+        if (!firebasePersistenceViewModel.isPersistenceEnabled) {
             FirebaseApp.initializeApp(this)
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-            preferences.edit().putBoolean("isPersistenceEnabled", true).apply()
+            firebasePersistenceViewModel.isPersistenceEnabled = true
         }
 
         setContent {
@@ -58,6 +60,10 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+class FirebasePersistenceViewModel : ViewModel() {
+    var isPersistenceEnabled: Boolean = false
 }
 @Composable
 fun MiSplashScreen() {

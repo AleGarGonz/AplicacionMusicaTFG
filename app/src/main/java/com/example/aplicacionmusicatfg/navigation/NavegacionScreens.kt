@@ -23,7 +23,7 @@ import com.example.aplicacionmusicatfg.view.RegistroScreen
 import com.google.firebase.auth.FirebaseUser
 
 //No puedo pasar objetos enteros porque navigation de jetpack compose no deja pasar objetos
-//Estuve haciendo pruebas transformando el objeto a json y luego destransformandolo pero me dejaba daba muchos problemas
+//Estuve haciendo pruebas transformando el objeto a json y luego destransformandolo pero me daba muchos problemas
 
 @Composable
 fun NaveegacionScreens(){

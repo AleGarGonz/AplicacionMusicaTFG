@@ -130,7 +130,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 }
             }
             if (esMia) {
-                BotonAñadirCanciones {
+                BotonAnadirCanciones {
                     navController.navigate(
                         route = Rutas.AnadirCanciones.createRoute(
                             ListaID
@@ -175,7 +175,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
 }
 
 @Composable
-private fun BotonAñadirCanciones(onClick: () -> Unit) {
+private fun BotonAnadirCanciones(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(Color.Cyan),

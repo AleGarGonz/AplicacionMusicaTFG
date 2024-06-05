@@ -1,6 +1,8 @@
 package com.example.aplicacionmusicatfg.view
 
 
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiFooter
@@ -18,10 +22,31 @@ import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiHeader
 import com.example.aplicacionmusicatfg.componentes.PerfilUsuarioScreenComponentes.Body
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
+import com.example.aplicacionmusicatfg.navigation.Rutas
 
 @Composable
 fun PerfilUsuarioScreen(navController: NavController, loginController: LoginController,usuarioController: UsuarioController) {
     var showDialog by remember { mutableStateOf(false) }
+    val currentDestinationId = navController.currentDestination?.id
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val onBackPressedDispatcher = (LocalContext.current as ComponentActivity).onBackPressedDispatcher
+    val backCallback = remember {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Navegar a la pantalla deseada
+                navController.navigate(Rutas.GenerosScreen.route){
+                    if (currentDestinationId != null) {
+                        popUpTo(currentDestinationId) {
+                            saveState = true
+                            inclusive = true
+                        }
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        }
+    }
     Box(
         Modifier
             .fillMaxSize()
@@ -35,5 +60,6 @@ fun PerfilUsuarioScreen(navController: NavController, loginController: LoginCont
             navController = navController
         )
         MiFooter(Modifier.align(Alignment.BottomCenter),navController = navController)
+        onBackPressedDispatcher.addCallback(lifecycleOwner, backCallback)
     }
 }
