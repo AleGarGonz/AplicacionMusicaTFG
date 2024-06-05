@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes
+package com.example.aplicacionmusicatfg.componentes.ListasDeReproScreenComponentes
 
 import android.widget.Toast
 import androidx.compose.foundation.background

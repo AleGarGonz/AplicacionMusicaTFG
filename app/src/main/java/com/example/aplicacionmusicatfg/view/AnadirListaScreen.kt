@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.aplicacionmusicatfg.componentes.AnadirListasComponentes.Body
+import com.example.aplicacionmusicatfg.componentes.AnadirListasScreenComponentes.Body
 import com.example.aplicacionmusicatfg.controladores.LoginController
 @Composable
 fun AnadirListaScreen(navController: NavController, loginController: LoginController){

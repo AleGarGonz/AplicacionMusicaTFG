@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.AnadirListasComponentes
+package com.example.aplicacionmusicatfg.componentes.AnadirListasScreenComponentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

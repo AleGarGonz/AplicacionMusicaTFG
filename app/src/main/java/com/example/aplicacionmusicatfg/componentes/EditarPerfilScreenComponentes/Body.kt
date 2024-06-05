@@ -1,4 +1,4 @@
-package com.example.aplicacionmusicatfg.componentes.EditarPerfilComponentes
+package com.example.aplicacionmusicatfg.componentes.EditarPerfilScreenComponentes
 
 import android.content.Context
 import android.graphics.Bitmap

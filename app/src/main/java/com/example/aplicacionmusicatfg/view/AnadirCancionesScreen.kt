@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.aplicacionmusicatfg.componentes.AnadirCancionesComponentes.Body
+import com.example.aplicacionmusicatfg.componentes.AnadirCancionesScreenComponentes.Body
 import com.example.aplicacionmusicatfg.controladores.LoginController
 
 @Composable

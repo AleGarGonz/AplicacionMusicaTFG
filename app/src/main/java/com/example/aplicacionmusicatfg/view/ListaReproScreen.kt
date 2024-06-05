@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiFooter
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.MiHeader
-import com.example.aplicacionmusicatfg.componentes.ListasDeReproComponentes.Body
+import com.example.aplicacionmusicatfg.componentes.ListasDeReproScreenComponentes.Body
 
 import com.example.aplicacionmusicatfg.controladores.LoginController
 

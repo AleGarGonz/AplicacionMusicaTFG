@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.aplicacionmusicatfg.componentes.EditarPerfilComponentes.Body
+import com.example.aplicacionmusicatfg.componentes.EditarPerfilScreenComponentes.Body
 
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
