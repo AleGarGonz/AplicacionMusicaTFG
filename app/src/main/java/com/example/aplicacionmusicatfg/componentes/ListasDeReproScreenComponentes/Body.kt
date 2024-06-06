@@ -50,7 +50,7 @@ import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import kotlinx.coroutines.delay
 
-val listasreprocontroller = ListaReproController() //Igual estaria bien ponerlo fuera no lo se... lo detectan todas las ventanas que se abren de esta no se porqie
+val listasreprocontroller = ListaReproController()
 @Composable
 fun Body(
     modifier: Modifier,

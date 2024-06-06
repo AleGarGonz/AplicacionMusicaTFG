@@ -58,16 +58,14 @@ import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.biografiaText
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.generoFavText
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.nombreText
+import com.example.aplicacionmusicatfg.controladores.ImagenController
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
-import com.example.aplicacionmusicatfg.controladores.getImagenStorage
-import com.example.aplicacionmusicatfg.controladores.subirImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Usuario
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
-
 
 @Composable
 fun Body(
@@ -79,7 +77,7 @@ fun Body(
     var usuario: Usuario? by remember { mutableStateOf(null) }
 
     val emailBuscado = logincontrol.getCurrentUser()?.email.toString()
-
+    val imagenController = ImagenController()
     var ImagenFile by remember { mutableStateOf<File?>(null) }
     var ImagenFileActualizado by remember { mutableStateOf<File?>(null) }
     var imagenActualizada by remember { mutableStateOf(false) }
@@ -105,7 +103,7 @@ fun Body(
 
     usuario?.let { usuario ->
         if(usuario.fotoperfil != null && usuario.fotoperfil.isNotBlank() && usuario.fotoperfil.isNotEmpty() ){
-            getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
+            imagenController.getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
                 if (excepcion != null) {
                     println("Error al descargar archivos: ${excepcion.message}")
                 } else {
@@ -194,7 +192,7 @@ fun Body(
                 BotonActualizar() {
                     if (imagenActualizada) {
                         ImagenFileActualizado?.let {
-                            subirImagenStorage(
+                            imagenController.subirImagenStorage(
                                 it,
                                 onSuccess = {
                                     val fileName = ImagenFileActualizado!!.name

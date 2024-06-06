@@ -26,14 +26,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.CancionItem
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.validarAudioLista
+import com.example.aplicacionmusicatfg.controladores.CancionController
 import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
-import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorArtista
-import com.example.aplicacionmusicatfg.controladores.buscarCancionesPorTitulo
-import com.example.aplicacionmusicatfg.controladores.getListaSinConexionCancionStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
 import java.io.File
 
 private val musicPlayerController = MusicPlayerController()
+private val cancionController = CancionController()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusquedaScreen(navController: NavController,genero: String?) {
@@ -45,17 +44,17 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
     LaunchedEffect(searchText) {
         if(genero!!.contains("Def")){
             // Realizar búsqueda por título
-            buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
+            cancionController.buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
                 // Realizar búsqueda por artista
-                buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
+                cancionController.buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
                     // Combinar ambas listas y eliminar duplicados
                     val cancionesCombinadas = (cancionesPorTitulo + cancionesPorArtista).distinctBy { it.titulo }
                     canciones = cancionesCombinadas
                 }
             }
         }else{
-            buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
-                buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
+            cancionController.buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
+                cancionController.buscarCancionesPorArtista(searchText) { cancionesPorArtista ->
                     val cancionesCombinadas = (cancionesPorTitulo + cancionesPorArtista).distinctBy { it.titulo }
 
                     val cancionesFiltradas = cancionesCombinadas.filter { cancion ->
@@ -143,7 +142,7 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
         )
         Column(modifier = Modifier.fillMaxSize()) {
             if (canciones.isNotEmpty()) {
-                getListaSinConexionCancionStorage(LocalContext.current,canciones = canciones) { archivosDescargados, exception ->
+                cancionController.getListaSinConexionCancionStorage(LocalContext.current,canciones = canciones) { archivosDescargados, exception ->
                     if (exception != null) {
                         println("Error al descargar archivos: ${exception.message}")
                     } else {

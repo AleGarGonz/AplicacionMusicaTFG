@@ -46,9 +46,9 @@ import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.biografiaText
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.emailText
 import com.example.aplicacionmusicatfg.componentes.ComponentesComunes.generoFavText
+import com.example.aplicacionmusicatfg.controladores.ImagenController
 import com.example.aplicacionmusicatfg.controladores.LoginController
 import com.example.aplicacionmusicatfg.controladores.UsuarioController
-import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Usuario
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import java.io.File
@@ -71,6 +71,8 @@ fun Body(
 
     val context =LocalContext.current
 
+    val imagenController = ImagenController()
+
     // Descargar y asignar el usuario al estado cuando esté disponible
     LaunchedEffect(key1 = emailBuscado) {
         usuarioController.descargarUsuario(emailBuscado) { usuarioDescargado ->
@@ -80,7 +82,7 @@ fun Body(
 
     usuario?.let { usuario ->
         if(usuario.fotoperfil != null && usuario.fotoperfil.isNotBlank() && usuario.fotoperfil.isNotEmpty() ){
-            getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
+            imagenController.getImagenStorage(LocalContext.current, usuario!!.fotoperfil) { archivo, excepcion ->
                 if (excepcion != null) {
                     println("Error al descargar archivos: ${excepcion.message}")
                 } else {

@@ -38,30 +38,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
+import com.example.aplicacionmusicatfg.controladores.CancionController
+import com.example.aplicacionmusicatfg.controladores.ImagenController
 import com.example.aplicacionmusicatfg.controladores.MusicPlayerController
-import com.example.aplicacionmusicatfg.controladores.getCancionStorage
-import com.example.aplicacionmusicatfg.controladores.getImagenStorage
 import com.example.aplicacionmusicatfg.modelos.Cancion
 import kotlinx.coroutines.delay
 import java.io.File
 
 val musicPlayerController = MusicPlayerController()
+val cancionController = CancionController()
 @Composable
 fun Body(navController: NavController,cancion: Cancion) {
     var CancionFile: File? = null;
     var ImagenFile: File? = null;
     var pantalllaVisible by rememberSaveable { mutableStateOf(false) }
-
+    val imagenController = ImagenController()
     //Usar un objeto Cancion Controlador e Imagen Controllador
 
-    getCancionStorage(LocalContext.current,cancion.audio) { archivo, excepcion ->
+    cancionController.getCancionStorage(LocalContext.current,cancion.audio) { archivo, excepcion ->
         if (excepcion != null) {
             println("Error al descargar archivos: ${excepcion.message}")
         } else {
             CancionFile = archivo
         }
     }
-    getImagenStorage(LocalContext.current,cancion.imagen) { archivo, excepcion ->
+    imagenController.getImagenStorage(LocalContext.current,cancion.imagen) { archivo, excepcion ->
         if (excepcion != null) {
             println("Error al descargar archivos: ${excepcion.message}")
         } else {

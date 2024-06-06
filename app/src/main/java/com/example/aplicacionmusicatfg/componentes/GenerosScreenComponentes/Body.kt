@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.aplicacionmusicatfg.R
 import com.example.aplicacionmusicatfg.controladores.GeneroController
-import com.example.aplicacionmusicatfg.controladores.getImagenStorage
+import com.example.aplicacionmusicatfg.controladores.ImagenController
 import com.example.aplicacionmusicatfg.modelos.Genero
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import java.io.File
@@ -62,6 +62,7 @@ fun MiBody(modifier: Modifier,navController: NavController) {
     val generoController = GeneroController()
     var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
     var archivosImagenes = remember { mutableStateListOf<File>() }
+    val imagenController = ImagenController()
     //Descargo la lista de generos
     if(listaGeneros.isEmpty()){
         generoController.getListaGenerosRealtime { generos ->
@@ -71,7 +72,7 @@ fun MiBody(modifier: Modifier,navController: NavController) {
     //Descargo sus respectivas imagenes
     if(archivosImagenes.isEmpty()){
         for (genre in listaGeneros) {
-            getImagenStorage(
+            imagenController.getImagenStorage(
                 LocalContext.current,
                 genre.imagen
             ) { archivo, excepcion ->
