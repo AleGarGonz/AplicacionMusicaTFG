@@ -94,7 +94,9 @@ fun Body(
                     listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listasDeUID ->
                         val listasFiltradas = listas.filterNot { lista ->
                             listasDeUID.any { it.id == lista.id }
-                        }
+                        }.filter { lista ->
+                            lista.Publico
+                        }.distinctBy { it.id }
                         listasReproduccionDescargadas = listasFiltradas
                         actualizarlista = false
                     }
@@ -105,7 +107,9 @@ fun Body(
                     listasreprocontroller.descargarTodasLasListasReproduccion(uid) { listasDeUID ->
                         val listasFiltradas = listas.filterNot { lista ->
                             listasDeUID.any { it.id == lista.id }
-                        }
+                        }.filter { lista ->
+                            lista.Publico
+                        }.distinctBy { it.id }
                         listasReproduccionDescargadas = listasFiltradas
                         actualizarlista = false
                     }

@@ -36,6 +36,21 @@ class ListaReproController: ViewModel() {
                 println("Error al actualizar la lista de reproducción en Firebase: $exception")
             }
     }
+
+    fun actualizarListaReproduccionPublico(listaReproduccion: ListaReproduccion, uid: String, idLista: String) {
+        val actualizacionMap = mutableMapOf<String, Any?>()
+        actualizacionMap["publico"] = listaReproduccion.Publico
+
+        val listaRef = myRef.child(uid).child(idLista)
+
+        listaRef.updateChildren(actualizacionMap)
+            .addOnSuccessListener {
+                println("La lista de reproducción se actualizó exitosamente en Firebase.")
+            }
+            .addOnFailureListener { exception ->
+                println("Error al actualizar la lista de reproducción en Firebase: $exception")
+            }
+    }
     fun descargarListaReproduccion(listaId: String, callback: (ListaReproduccion?) -> Unit) {
         val usersRef = myRef
 

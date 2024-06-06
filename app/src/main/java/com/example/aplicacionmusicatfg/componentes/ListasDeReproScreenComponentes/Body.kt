@@ -1,5 +1,6 @@
 package com.example.aplicacionmusicatfg.componentes.ListasDeReproScreenComponentes
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,7 +114,7 @@ fun Body(
                 }
             }
         }
-        ListaReproduccionCards(listas = listasReproduccionDescargadas, modifier,navController) { listaId ->
+        ListaReproduccionCards(listas = listasReproduccionDescargadas, modifier,navController,uid) { listaId ->
             listasreprocontroller.borrarListaReproduccion(uid, listaId)
             listasReproduccionDescargadas = listasReproduccionDescargadas.filterNot { it.id == listaId }
         }
@@ -137,23 +139,24 @@ fun ListaReproduccionCards(
     listas: List<ListaReproduccion>,
     modifier: Modifier,
     navController:NavController,
+    uid: String,
     onDelete: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         items(listas) { lista ->
-            ListaReproduccionItem(nombreLista = lista.Listanombre, listaId = lista.id,navController, onDelete = onDelete)
+            ListaReproduccionItem(lista = lista,navController,uid, onDelete = onDelete)
         }
     }
 }
 @Composable
 fun ListaReproduccionItem(
-    nombreLista: String,
-    listaId: String,
+    lista:ListaReproduccion,
     navController: NavController,
+    uid: String,
     onDelete: (String) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
+    var context = LocalContext.current
     Card(
         modifier = Modifier
             .width(350.dp)
@@ -164,7 +167,7 @@ fun ListaReproduccionItem(
             .clickable {
                 navController.navigate(
                     route = Rutas.Lista.createRoute(
-                        listaId
+                        lista.id
                     )
                 ) },
         shape = RoundedCornerShape(8.dp),
@@ -175,7 +178,7 @@ fun ListaReproduccionItem(
             modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = nombreLista,
+                text = lista.Listanombre,
                 fontSize = 21.sp,
                 textAlign = TextAlign.Start,
                 color = Color.Black,
@@ -183,6 +186,7 @@ fun ListaReproduccionItem(
                     .padding(start = 12.dp)
                     .weight(1f)
             )
+            BotonPublicoIcon(lista,uid,context)
             IconButton(onClick = { showDialog = true }) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_delete_24),
@@ -200,7 +204,7 @@ fun ListaReproduccionItem(
             title = { Text(text = "¿Estás seguro que deseas borrar la lista?", fontSize = 20.sp) },
             confirmButton = {
                 Button(onClick = {
-                    onDelete(listaId)
+                    onDelete(lista.id)
                     showDialog = false
                 },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)) {
@@ -312,5 +316,34 @@ private fun CrearListaDialog(onDismiss: () -> Unit, onCreate: (String) -> Unit) 
                 Text("Cancelar",color = Color.White)
             }
         }
+    )
+}
+private fun listaPublica(lista:ListaReproduccion, uid: String){
+    listasreprocontroller.actualizarListaReproduccionPublico(lista,uid, lista.id)
+}
+@Composable
+private fun BotonPublicoIcon(lista: ListaReproduccion,uid: String,context:Context) {
+    var isPublic by rememberSaveable { mutableStateOf(lista.Publico) }
+
+    LaunchedEffect(lista.Publico) {
+        isPublic = lista.Publico
+    }
+    val onClick: () -> Unit = {
+        isPublic = !isPublic
+        lista.Publico = isPublic
+        if(lista.Publico == true){
+            Toast.makeText(context, "Ahora tu lista es publica!", Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(context, "Ahora tu lista es privada!", Toast.LENGTH_SHORT).show()
+        }
+        listaPublica(lista,uid)
+    }
+    Icon(
+        painter = painterResource(
+            id = if (isPublic) R.drawable.baseline_public_24 else R.drawable.baseline_public_off_24
+        ),
+        contentDescription = if (isPublic) "Publico" else "Privado",
+        tint = if (isPublic) Color.Green else Color.Gray,
+        modifier = Modifier.clickable(onClick = onClick)
     )
 }
