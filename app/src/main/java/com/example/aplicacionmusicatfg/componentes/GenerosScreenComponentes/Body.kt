@@ -1,5 +1,6 @@
 package com.example.aplicacionmusicatfg.componentes.GenerosScreenComponentes
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.BorderStroke
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,15 +26,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,54 +59,89 @@ import com.example.aplicacionmusicatfg.controladores.GeneroController
 import com.example.aplicacionmusicatfg.controladores.ImagenController
 import com.example.aplicacionmusicatfg.modelos.Genero
 import com.example.aplicacionmusicatfg.navigation.Rutas
+import kotlinx.coroutines.delay
 import java.io.File
 import java.util.Random
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun MiBody(modifier: Modifier,navController: NavController) {
     val generoController = GeneroController()
     var listaGeneros by remember { mutableStateOf(emptyList<Genero>()) }
     var archivosImagenes = remember { mutableStateListOf<File>() }
     val imagenController = ImagenController()
+    var visible by rememberSaveable { mutableStateOf(false) }
+    var context = LocalContext.current
     //Descargo la lista de generos
     if(listaGeneros.isEmpty()){
         generoController.getListaGenerosRealtime { generos ->
             listaGeneros = generos
-        }
-    }
-    //Descargo sus respectivas imagenes
-    if(archivosImagenes.isEmpty()){
-        for (genre in listaGeneros) {
-            imagenController.getImagenStorage(
-                LocalContext.current,
-                genre.imagen
-            ) { archivo, excepcion ->
-                if (excepcion != null) {
-                    println("Error al descargar archivos: ${excepcion.message}")
-                } else {
-                    val nombreImagen = genre.imagen?.substringBeforeLast(".")
-                    if (archivo?.absoluteFile!!.name.contains(nombreImagen.toString())) {
-                        archivosImagenes.add(archivo)
+            for (genre in listaGeneros) {
+                //Descargo sus respectivas imagenes
+                imagenController.getImagenStorage(
+                    context,
+                    genre.imagen
+                ) { archivo, excepcion ->
+                    if (excepcion != null) {
+                        println("Error al descargar archivos: ${excepcion.message}")
+                    } else {
+                        val nombreImagen = genre.imagen?.substringBeforeLast(".")
+                        if (archivo?.absoluteFile!!.name.contains(nombreImagen.toString())) {
+                            archivosImagenes.add(archivo)
+                        }
                     }
                 }
             }
         }
     }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black),
+    LaunchedEffect(listaGeneros.size == archivosImagenes.size){
+        if(!visible){
+            delay(2000)
+        }
+        visible = true
+    }
+    if(visible){
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black),
+                    )
                 )
-            )
-    ) {
-        buscarButton(navController)
-        explogentext(
-            modifier
-                .padding(top = 12.dp)
-                .padding(horizontal = 12.dp))
-        GeneroList(modifier = Modifier.fillMaxWidth(), navController,listaGeneros,archivosImagenes)
+        ) {
+            buscarButton(navController)
+            explogentext(
+                modifier
+                    .padding(top = 12.dp)
+                    .padding(horizontal = 12.dp))
+            GeneroList(modifier = Modifier.fillMaxWidth(), navController,listaGeneros,archivosImagenes)
+        }
+    }else{
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color.Cyan.copy(alpha = 0.9f), Color.Black)
+                    )
+                ),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(250.dp)
+                    .padding(60.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(150.dp),
+                    color = Color.Blue,
+                    strokeWidth = 8.dp
+                )
+            }
+        }
     }
 }
 

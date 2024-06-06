@@ -75,7 +75,6 @@ fun Body(
     usuarioController: UsuarioController
 ) {
     var usuario: Usuario? by remember { mutableStateOf(null) }
-
     val emailBuscado = logincontrol.getCurrentUser()?.email.toString()
     val imagenController = ImagenController()
     var ImagenFile by remember { mutableStateOf<File?>(null) }
@@ -83,7 +82,6 @@ fun Body(
     var imagenActualizada by remember { mutableStateOf(false) }
     val currentDestinationId = navController.currentDestination?.id
     val context = LocalContext.current
-
     var nombre by rememberSaveable {
         mutableStateOf("")
     }
@@ -116,7 +114,7 @@ fun Body(
                 .fillMaxSize()
                 .height(140.dp)
                 .background(
-                    color = Color.Black//Poner un fondo wapo o algo
+                    color = Color.Black
                 )
         )
         Box(
@@ -225,7 +223,6 @@ fun Body(
                                     }
                                 },
                                 onCanceled = {
-                                    // Acciones a realizar en caso de cancelación
                                     Toast.makeText(context, "No se pudo actualizar!", Toast.LENGTH_SHORT).show()
                                 }
                             )
@@ -263,7 +260,6 @@ fun Body(
         }
     }
 }
-
 @Composable
 private fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Context) {
     val scope = rememberCoroutineScope()
@@ -275,7 +271,6 @@ private fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Conte
             }
         }
     }
-
     IconButton(
         onClick = {
             scope.launch {
@@ -290,7 +285,7 @@ private fun ImageSelectionButton(onImageSelected: (File) -> Unit, context: Conte
         )
     }
 }
-
+//A partir de la uri de la imagen obtengo el File con este metodo
 private fun getFileFromUri(uri: Uri, context: Context): File? {
     val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
     val cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)

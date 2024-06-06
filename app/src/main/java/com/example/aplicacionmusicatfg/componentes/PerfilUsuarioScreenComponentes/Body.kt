@@ -123,18 +123,29 @@ fun Body(
         ) {
             if(validarImagenUsuario(ImagenFile,usuario)) {
                 // Lee el archivo en un Bitmap
-                val bitmap: Bitmap = BitmapFactory.decodeFile(ImagenFile!!.absolutePath)
+                if(ImagenFile!!.absolutePath != null){
+                    val bitmap: Bitmap = BitmapFactory.decodeFile(ImagenFile!!.absolutePath)
 
-                // Convierte el Bitmap en un ImageBitmap
-                val imageBitmap = bitmap.asImageBitmap()
-                Image(
-                    bitmap = imageBitmap,
-                    contentDescription = "Foto perfil",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.FillBounds
-                )
+                    // Convierte el Bitmap en un ImageBitmap
+                    val imageBitmap = bitmap.asImageBitmap()
+                    Image(
+                        bitmap = imageBitmap,
+                        contentDescription = "Foto perfil",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }else{
+                    Image(
+                        painter = painterResource(id = R.drawable.imagenperfilpordefecto),
+                        contentDescription = "Descripción de la imagen",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
             }else{
                 Image(
                     painter = painterResource(id = R.drawable.imagenperfilpordefecto),
