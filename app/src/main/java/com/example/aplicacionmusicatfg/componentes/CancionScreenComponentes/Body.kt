@@ -45,15 +45,14 @@ import com.example.aplicacionmusicatfg.modelos.Cancion
 import kotlinx.coroutines.delay
 import java.io.File
 
-val musicPlayerController = MusicPlayerController()
-val cancionController = CancionController()
+private val musicPlayerController = MusicPlayerController()
+private val cancionController = CancionController()
 @Composable
 fun Body(navController: NavController,cancion: Cancion) {
     var CancionFile: File? = null;
     var ImagenFile: File? = null;
     var pantalllaVisible by rememberSaveable { mutableStateOf(false) }
     val imagenController = ImagenController()
-    //Usar un objeto Cancion Controlador e Imagen Controllador
 
     cancionController.getCancionStorage(LocalContext.current,cancion.audio) { archivo, excepcion ->
         if (excepcion != null) {
@@ -84,6 +83,7 @@ fun Body(navController: NavController,cancion: Cancion) {
             imagen = ImagenFile
         )
     }else{
+        //En caso de que llegue aqui y no se haya descargado bien la información, mostrara este CircularProgressIndicator
         CircularProgressIndicator(
             modifier = Modifier
                 .size(90.dp)
@@ -92,6 +92,9 @@ fun Body(navController: NavController,cancion: Cancion) {
             strokeWidth = 12.dp,
         )
     }
+    //Si la canción se esta reproduciendo y el usuario decide retroceder a la pantalla anterior, esto eliminara
+    //el recurso de la cancion de ese momento del musicPlayerController para evitar que se solapen varios audios
+    // y algunos problemas varios
     BackHandler(onBack = {
         navController.popBackStack()
         musicPlayerController.release()

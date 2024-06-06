@@ -44,7 +44,7 @@ import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import com.example.aplicacionmusicatfg.navigation.Rutas
 import kotlinx.coroutines.delay
 
-val listasreprocontroller = ListaReproController()
+private val listasreprocontroller = ListaReproController()
 @Composable
 fun Body(
     modifier: Modifier,
@@ -117,9 +117,9 @@ fun Body(
         }
     }
 }
-
+//LazyColumn que contiene todos los items(cards) de las listas de reproducción
 @Composable
-fun ListaReproduccionCards(
+private fun ListaReproduccionCards(
     listas: List<ListaReproduccion>,
     modifier: Modifier,
     navController:NavController,
@@ -132,8 +132,9 @@ fun ListaReproduccionCards(
         }
     }
 }
+//Items(cards) que muestra el lazycolumn de cada lista de reproducción
 @Composable
-fun ListaReproduccionItem(
+private fun ListaReproduccionItem(
     lista: ListaReproduccion,
     uid: String,
     navController: NavController
@@ -158,6 +159,7 @@ fun ListaReproduccionItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxSize()
         ) {
+            //Si se añade la lista desactivo el boton para que no pueda causar problemas
             var isAdded by remember { mutableStateOf(false) }
             Text(
                 text = lista.Listanombre,

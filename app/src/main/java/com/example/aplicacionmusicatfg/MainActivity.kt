@@ -65,6 +65,8 @@ class MainActivity : ComponentActivity() {
 class FirebasePersistenceViewModel : ViewModel() {
     var isPersistenceEnabled: Boolean = false
 }
+////////////////////////////////////////////////////////////////////////////////////////
+//Splash Screen
 @Composable
 fun MiSplashScreen() {
     var isVisible by remember { mutableStateOf(true) }

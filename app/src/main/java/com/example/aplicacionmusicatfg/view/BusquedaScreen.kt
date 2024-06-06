@@ -42,6 +42,7 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
     var lazyColumnVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(searchText) {
+        //Pongo Def porque navigation cuando no pasas un genero establece el valor del string como Default
         if(genero!!.contains("Def")){
             // Realizar búsqueda por título
             cancionController.buscarCancionesPorTitulo(searchText) { cancionesPorTitulo ->
@@ -77,6 +78,7 @@ fun BusquedaScreen(navController: NavController,genero: String?) {
             )
     )
     Column(modifier = Modifier.fillMaxSize()) {
+        //Pongo Def porque navigation cuando no pasas un genero establece el valor del string como Default
         if(!genero!!.contains("Def")){
             Text(
                 text = genero,

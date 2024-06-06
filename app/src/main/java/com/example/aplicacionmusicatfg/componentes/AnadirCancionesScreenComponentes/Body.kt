@@ -50,8 +50,8 @@ import com.example.aplicacionmusicatfg.modelos.ListaReproduccion
 import java.io.File
 
 private val musicPlayerController = MusicPlayerController()
-var listaRepro = ListaReproduccion()
-val cancionController = CancionController()
+private var listaRepro = ListaReproduccion()
+private val cancionController = CancionController()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Body(navController: NavController, loginController: LoginController, ListaID: String) {
@@ -148,7 +148,7 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
                 if(lazyColumnVisible){
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(canciones) { cancion ->
-                            AñadirCancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid)
+                            AnadirCancionItem(cancion = cancion,listaDeArchivos,musicPlayerController,uid)
                         }
                     }
                 }
@@ -157,14 +157,16 @@ fun Body(navController: NavController, loginController: LoginController, ListaID
             }
         }
     }
+    //En caso de que salga de esta pantalla, vacía la lista
     BackHandler(onBack = {
         listaRepro.Canciones = emptyList()
         navController.popBackStack()
     })
 }
+//Item de cada cancion(card) del lazycolumn con el boton de añadir
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AñadirCancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String) {
+private fun AnadirCancionItem(cancion: Cancion, listCanciones:List<File>, musicPlayerController: MusicPlayerController,uid:String) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -189,6 +191,7 @@ private fun AñadirCancionItem(cancion: Cancion, listCanciones:List<File>, music
         border = BorderStroke(2.dp, Color.Cyan)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.background(Color.White)) {
+            //Si se añade la canción desactivo el boton para que no pueda causar problemas
             var isAdded by remember { mutableStateOf(false) }
             Column(
                 Modifier
@@ -226,6 +229,7 @@ private fun AñadirCancionItem(cancion: Cancion, listCanciones:List<File>, music
             }
 
         }
+        //Despliega el reproductor en la parte inferior de la pantalla
         if(isSheetOpen){
             ModalBottomSheet(
                 containerColor= Color.Cyan,
