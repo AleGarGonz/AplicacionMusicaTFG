@@ -27,10 +27,10 @@ fun ListaReproScreen(navController: NavController, loginController: LoginControl
     val currentDestinationId = navController.currentDestination?.id
     val lifecycleOwner = LocalLifecycleOwner.current
     val onBackPressedDispatcher = (LocalContext.current as ComponentActivity).onBackPressedDispatcher
+    //Vuelve a la pantalla de los generos(Principal)
     val backCallback = remember {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // Navegar a la pantalla deseada
                 navController.navigate(Rutas.GenerosScreen.route){
                     if (currentDestinationId != null) {
                         popUpTo(currentDestinationId) {
